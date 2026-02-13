@@ -1,5 +1,5 @@
 const en = {
-   
-};
+    hello: 'Приветствую',
+}
 
-export default en;
+export default en
