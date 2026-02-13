@@ -28,8 +28,16 @@ body {
     margin: 0;
     display: flex;
     place-items: center;
+    justify-content: center;
     min-width: 320px;
     min-height: 100vh;
+}
+
+#root {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0; /* allow width to be constrained in flex layout */
+    box-sizing: border-box;
 }
 
 h1 {
