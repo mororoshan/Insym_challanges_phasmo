@@ -91,7 +91,8 @@ function drawWheel<T>(
 
         const label = getLabel(items[i])
         const maxLen = radius > 80 ? 14 : 10
-        const truncated = label.length > maxLen ? label.slice(0, maxLen - 1) + '…' : label
+        const truncated =
+            label.length > maxLen ? label.slice(0, maxLen - 1) + '…' : label
         ctx.fillText(truncated, 0, 0)
         ctx.restore()
     }
@@ -144,9 +145,17 @@ function WheelOfNamesInner<T>(
             const centerY = height / 2
             const radius = Math.min(width, height) / 2 - 8
 
-            drawWheel(ctx, centerX, centerY, radius, items, getLabel, rotationDeg)
+            drawWheel(
+                ctx,
+                centerX,
+                centerY,
+                radius,
+                items,
+                getLabel,
+                rotationDeg
+            )
         },
-        [items, getLabel, size]
+        [getLabel, size]
     )
 
     // Redraw when items or size change (and not spinning)
@@ -154,7 +163,7 @@ function WheelOfNamesInner<T>(
         if (!isSpinningRef.current) {
             draw(rotationRef.current)
         }
-    }, [draw, items, size])
+    }, [draw, size])
 
     const spin = useCallback(() => {
         if (items.length === 0 || isSpinningRef.current || disabled) return
@@ -168,7 +177,7 @@ function WheelOfNamesInner<T>(
         // to end, so segment 0 is the wedge from -90° going clockwise. So the wedge that contains the top (-90°)
         // is the one whose start is just after -90° going counterclockwise, i.e. the segment we draw before the one at top.
         // So the segment under the pointer is actually (index - 1 + n) % n when we put start of index at top.
-        const targetModExact = (360 - (index * segmentAngleDeg) % 360) % 360
+        const targetModExact = (360 - ((index * segmentAngleDeg) % 360)) % 360
         const randomOffsetInSegment = Math.random() * segmentAngleDeg
         const targetMod = (targetModExact + randomOffsetInSegment) % 360
         const extra = (targetMod - currentMod + 360) % 360
@@ -185,7 +194,8 @@ function WheelOfNamesInner<T>(
             const elapsed = now - startTime
             const t = Math.min(elapsed / durationMs, 1)
             const eased = easeOutCubic(t)
-            const currentRotation = startRotation + (targetRotation - startRotation) * eased
+            const currentRotation =
+                startRotation + (targetRotation - startRotation) * eased
             rotationRef.current = currentRotation
             draw(currentRotation)
 
@@ -200,7 +210,7 @@ function WheelOfNamesInner<T>(
         }
 
         animationRef.current = requestAnimationFrame(tick)
-    }, [items, disabled, fullRotations, durationMs, onSpinComplete, draw])
+    }, [disabled, fullRotations, durationMs, onSpinComplete, draw])
 
     useImperativeHandle(ref, () => ({ spin }), [spin])
 
