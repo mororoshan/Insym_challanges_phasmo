@@ -50,6 +50,13 @@ const en = {
         ghostsInWheel: 'Ghosts in the wheel',
         resultTitle: 'The wheel says',
         sizeLabel: 'Wheel size',
+        historyButton: 'History of rolls',
+    },
+    history: {
+        title: 'History of rolls',
+        time: 'Time',
+        rolls: 'Rolls',
+        empty: 'No sessions yet. Spin the wheel and reset to create sessions.',
     },
 }
 

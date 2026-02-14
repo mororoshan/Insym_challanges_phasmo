@@ -1,10 +1,12 @@
-import { useCallback, useState, useMemo } from 'react'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import {
     GHOSTS,
     type EvidenceId,
     type Ghost,
     type GhostId,
 } from '@/shared/data/phasmophobia'
+import { SessionsStoreContext } from '@/app/store'
+import { MODE_IDS } from '@/shared/types/session'
 
 function isGhostCrossedOut(
     ghost: Ghost,
@@ -19,6 +21,7 @@ function isGhostCrossedOut(
 }
 
 export function useMainModeState() {
+    const sessionsStore = useContext(SessionsStoreContext)
     const [selectedEvidence, setSelectedEvidence] = useState<Set<EvidenceId>>(
         () => new Set()
     )
@@ -60,12 +63,25 @@ export function useMainModeState() {
         })
     }
 
-    const onWheelComplete = useCallback((ghost: Ghost) => {
-        setSpunGhosts((prev) => (prev ? [ghost, ...prev] : [ghost]))
-        toggleGhostCrossOut(ghost.id)
-    }, [])
+    const onWheelComplete = useCallback(
+        (ghost: Ghost) => {
+            setSpunGhosts((prev) => (prev ? [ghost, ...prev] : [ghost]))
+            toggleGhostCrossOut(ghost.id)
+            sessionsStore.addRoll(MODE_IDS.MAIN, {
+                itemId: ghost.id,
+                itemSnapshot: {
+                    id: ghost.id,
+                    name: ghost.name,
+                    evidence: ghost.evidence,
+                },
+                timestamp: Date.now(),
+            })
+        },
+        [sessionsStore]
+    )
 
     const reset = () => {
+        sessionsStore.endCurrentSession()
         setSelectedEvidence(new Set())
         setManualCrossOut(new Set())
         setSpunGhosts(null)

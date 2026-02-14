@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { WheelOfNames, type WheelOfNamesHandle } from '@/widgets/WheelOfNames'
 import type { Ghost } from '@/shared/data/phasmophobia'
 import { Modal } from 'antd'
+import { HistoryModal } from './HistoryModal'
 
 type Props = {
     availableGhosts: Ghost[]
@@ -25,6 +26,7 @@ export function WheelSection({
     const availableCount = availableGhosts.length
 
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false)
     const [wheelItemsSnapshot, setWheelItemsSnapshot] = useState<Ghost[]>([])
 
     const showModal = () => {
@@ -59,6 +61,13 @@ export function WheelSection({
                     >
                         {t('wheel.resetButton')}
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsHistoryOpen(true)}
+                        className="rounded border border-neutral-400 bg-white px-4 py-2 font-medium transition hover:bg-neutral-50"
+                    >
+                        {t('wheel.historyButton')}
+                    </button>
                     {availableCount > 0 && (
                         <span className="text-sm text-neutral-500">
                             {t('wheel.count', { count: availableCount })}
@@ -89,6 +98,11 @@ export function WheelSection({
                         />
                     </div>
                 </Modal>
+
+                <HistoryModal
+                    open={isHistoryOpen}
+                    onClose={() => setIsHistoryOpen(false)}
+                />
             </section>
 
             {spunGhosts && (
