@@ -1,6 +1,6 @@
 const en = {
-    accept: "Accept",
-    decline: "Decline",
-};
+    accept: 'Accept',
+    decline: 'Decline',
+}
 
-export default en;
+export default en

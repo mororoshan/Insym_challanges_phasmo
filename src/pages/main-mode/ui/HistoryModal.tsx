@@ -103,12 +103,18 @@ export const HistoryModal = observer(function HistoryModal({
                 container: {
                     background: '#242424',
                 },
+                body: {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: 0,
+                    maxHeight: '70vh',
+                },
             }}
         >
             {sessions.length === 0 ? (
                 <p className="py-4 text-neutral-100">{t('history.empty')}</p>
             ) : (
-                <div className="max-h-[70vh] overflow-auto">
+                <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
                     {sortedDates.map((dateKey) => {
                         const [y, m, d] = dateKey.split('-').map(Number)
                         const now = new Date()

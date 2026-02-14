@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { WheelOfNames, type WheelOfNamesHandle } from '@/widgets/WheelOfNames'
@@ -23,7 +23,17 @@ export function WheelSection({
 }: Props) {
     const { t, i18n } = useTranslation(ENameSpaces.MAIN_MODE)
     const wheelRef = useRef<WheelOfNamesHandle>(null)
+    const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const availableCount = availableGhosts.length
+
+    const AUTO_CLOSE_MS = 3500
+
+    const clearCloseTimeout = useCallback(() => {
+        if (closeTimeoutRef.current != null) {
+            clearTimeout(closeTimeoutRef.current)
+            closeTimeoutRef.current = null
+        }
+    }, [])
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isHistoryOpen, setIsHistoryOpen] = useState(false)
@@ -35,13 +45,29 @@ export function WheelSection({
     }
 
     const handleOk = () => {
+        clearCloseTimeout()
         setIsModalOpen(false)
     }
 
     const handleCancel = () => {
         if (wheelRef.current?.isSpinning()) return
+        clearCloseTimeout()
         setIsModalOpen(false)
     }
+
+    const handleWheelComplete = useCallback(
+        (ghost: Ghost) => {
+            onWheelComplete(ghost)
+            clearCloseTimeout()
+            closeTimeoutRef.current = setTimeout(() => {
+                closeTimeoutRef.current = null
+                setIsModalOpen(false)
+            }, AUTO_CLOSE_MS)
+        },
+        [onWheelComplete, clearCloseTimeout]
+    )
+
+    useEffect(() => () => clearCloseTimeout(), [clearCloseTimeout])
 
     return (
         <>
@@ -50,7 +76,7 @@ export function WheelSection({
                     <button
                         type="button"
                         onClick={() => showModal()}
-                        disabled={availableCount === 0}
+                        disabled={availableCount <= 1}
                         className="rounded bg-amber-500 px-4 py-2 font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {t('wheel.spinButton')}
@@ -89,7 +115,11 @@ export function WheelSection({
                     onOk={handleOk}
                     onCancel={handleCancel}
                     afterOpenChange={(isOpen) => {
-                        if (isOpen) wheelRef.current?.spin()
+                        if (isOpen) {
+                            wheelRef.current?.spin()
+                        } else {
+                            clearCloseTimeout()
+                        }
                     }}
                     footer={null}
                 >
@@ -98,7 +128,7 @@ export function WheelSection({
                             ref={wheelRef}
                             items={wheelItemsSnapshot}
                             getLabel={(g) => t(`ghosts.${g.id}`)}
-                            onSpinComplete={onWheelComplete}
+                            onSpinComplete={handleWheelComplete}
                             disabled={wheelItemsSnapshot.length === 0}
                             durationMs={4000}
                             fullRotations={6}

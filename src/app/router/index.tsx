@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import type { RouteObject } from 'react-router-dom'
+import { NotFoundPage } from '@/pages/not-found/ui/NotFoundPage'
 import { AppLayout } from '../layout/AppLayout'
 
 const pageRouteModules = import.meta.glob<{ routes: RouteObject[] }>(
@@ -7,7 +8,10 @@ const pageRouteModules = import.meta.glob<{ routes: RouteObject[] }>(
     { eager: true }
 )
 
-const childRoutes = Object.values(pageRouteModules).flatMap((m) => m?.routes ?? [])
+const childRoutes: RouteObject[] = [
+    ...Object.values(pageRouteModules).flatMap((m) => m?.routes ?? []),
+    { path: '*', element: <NotFoundPage /> },
+]
 
 const router = createBrowserRouter([
     {

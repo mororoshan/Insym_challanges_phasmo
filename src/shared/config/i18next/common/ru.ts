@@ -1,6 +1,6 @@
-const en = {
-    accept: "Подтвердить",
-    decline: "Отменить",
-};
+const ru = {
+    accept: 'Подтвердить',
+    decline: 'Отменить',
+}
 
-export default en;
+export default ru

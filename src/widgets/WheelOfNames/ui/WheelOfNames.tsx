@@ -42,6 +42,35 @@ function easeOutCubic(t: number): number {
     return 1 - Math.pow(1 - t, 3)
 }
 
+/** Segment index under the pointer at 0° (right side), given wheel rotation in degrees and segment count. */
+function segmentUnderPointer(rotationDeg: number, n: number): number {
+    const segmentAngleDeg = 360 / n
+    const normalized = ((90 - rotationDeg) % 360 + 360) % 360
+    return Math.floor(normalized / segmentAngleDeg) % n
+}
+
+let tickAudioContext: AudioContext | null = null
+
+function playTickSound() {
+    try {
+        if (!tickAudioContext) tickAudioContext = new AudioContext()
+        if (tickAudioContext.state === 'suspended') void tickAudioContext.resume()
+        const ctx = tickAudioContext
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.frequency.value = 720
+        osc.type = 'sine'
+        gain.gain.setValueAtTime(0.12, ctx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03)
+        osc.start(ctx.currentTime)
+        osc.stop(ctx.currentTime + 0.03)
+    } catch {
+        // ignore if audio unavailable
+    }
+}
+
 // Canvas arc uses 0 = 3 o'clock. We use 0 = top (12 o'clock), so offset by -π/2.
 const TOP_OFFSET = -Math.PI / 2
 
@@ -128,6 +157,7 @@ function WheelOfNamesInner<T>(
     const rotationRef = useRef(0)
     const animationRef = useRef<number | null>(null)
     const isSpinningRef = useRef(false)
+    const lastSegmentUnderPointerRef = useRef<number | null>(null)
 
     const draw = useCallback(
         (rotationDeg: number) => {
@@ -191,6 +221,10 @@ function WheelOfNamesInner<T>(
         const selectedIndex = (index - 1 + n) % n
 
         isSpinningRef.current = true
+        lastSegmentUnderPointerRef.current = segmentUnderPointer(
+            startRotation,
+            n
+        )
         const startTime = performance.now()
 
         const tick = (now: number) => {
@@ -201,6 +235,12 @@ function WheelOfNamesInner<T>(
                 startRotation + (targetRotation - startRotation) * eased
             rotationRef.current = currentRotation
             draw(currentRotation)
+
+            const segmentNow = segmentUnderPointer(currentRotation, n)
+            if (segmentNow !== lastSegmentUnderPointerRef.current) {
+                lastSegmentUnderPointerRef.current = segmentNow
+                playTickSound()
+            }
 
             if (t < 1) {
                 animationRef.current = requestAnimationFrame(tick)

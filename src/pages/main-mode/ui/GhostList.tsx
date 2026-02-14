@@ -20,7 +20,10 @@ export function GhostList({ crossedOutGhostIds, onToggleGhost }: Props) {
                         <li key={ghost.id}>
                             <button
                                 type="button"
-                                onClick={() => onToggleGhost(ghost.id)}
+                                onClick={(e) => {
+                                    onToggleGhost(ghost.id)
+                                    ;(e.currentTarget as HTMLButtonElement).blur()
+                                }}
                                 className={`rounded border px-3 py-1.5 text-left transition hover:bg-neutral-100 ${
                                     crossedOut
                                         ? 'border-neutral-300 bg-neutral-100 text-neutral-500 line-through'

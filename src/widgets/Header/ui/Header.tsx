@@ -11,13 +11,16 @@ export function Header({}: Props) {
                     <Link to="/" className="text-inherit hover:underline">
                         Home
                     </Link>
-                    <Link to="/about" className="text-inherit hover:underline">
-                        About
-                    </Link>
-                    <Link to="/settings" className="text-inherit hover:underline">
+                    <Link
+                        to="/settings"
+                        className="text-inherit hover:underline"
+                    >
                         Settings
                     </Link>
-                    <Link to="/main-mode" className="text-inherit hover:underline">
+                    <Link
+                        to="/main-mode"
+                        className="text-inherit hover:underline"
+                    >
                         Main mode
                     </Link>
                 </div>
