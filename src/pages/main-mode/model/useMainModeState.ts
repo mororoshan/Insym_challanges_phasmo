@@ -25,7 +25,7 @@ export function useMainModeState() {
     const [manualCrossOut, setManualCrossOut] = useState<Set<GhostId>>(
         () => new Set()
     )
-    const [spunGhost, setSpunGhost] = useState<Ghost | null>(null)
+    const [spunGhosts, setSpunGhosts] = useState<Ghost[] | null>(null)
 
     const crossedOutGhostIds = useMemo(() => {
         const set = new Set<GhostId>()
@@ -61,20 +61,21 @@ export function useMainModeState() {
     }
 
     const onWheelComplete = useCallback((ghost: Ghost) => {
-        setSpunGhost(ghost)
+        setSpunGhosts((prev) => (prev ? [ghost, ...prev] : [ghost]))
+        toggleGhostCrossOut(ghost.id)
     }, [])
 
     const reset = () => {
         setSelectedEvidence(new Set())
         setManualCrossOut(new Set())
-        setSpunGhost(null)
+        setSpunGhosts(null)
     }
 
     return {
         selectedEvidence,
         crossedOutGhostIds,
         availableGhosts,
-        spunGhost,
+        spunGhost: spunGhosts,
         toggleEvidence,
         toggleGhostCrossOut,
         onWheelComplete,

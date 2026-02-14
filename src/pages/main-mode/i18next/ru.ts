@@ -5,7 +5,7 @@ const ru = {
         hint: 'Включайте найденные улики — призраки без этой улики будут вычёркиваться.',
         emf5: 'EMF Уровень 5',
         dots: 'D.O.T.S. Проектор',
-        fingerprints: 'Отпечатки пальцев',
+        fingerprints: 'Ултрафиалет',
         ghostOrb: 'Призрачные сферы',
         ghostWriting: 'Призрачные надписи',
         spiritBox: 'Спирит-бокс',
@@ -38,6 +38,9 @@ const ru = {
         moroi: 'Морой',
         deogen: 'Деоген',
         thaye: 'Тхайе',
+        dayan: 'Диан',
+        gallu: 'Галлу',
+        obambo: 'Обамбо',
     },
     wheel: {
         spinButton: 'Крутить колесо',

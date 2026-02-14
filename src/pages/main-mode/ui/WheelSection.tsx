@@ -3,14 +3,13 @@ import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { WheelOfNames, type WheelOfNamesHandle } from '@/widgets/WheelOfNames'
 import type { Ghost } from '@/shared/data/phasmophobia'
-
-const WHEEL_SIZE_OPTIONS = [280, 320, 380, 420, 480] as const
+import { Modal } from 'antd'
 
 type Props = {
     availableGhosts: Ghost[]
     onWheelComplete: (ghost: Ghost) => void
     onReset: () => void
-    spunGhost: Ghost | null
+    spunGhosts: Ghost[] | null
     /** Initial wheel size in pixels (default 280). Ignored if not provided. */
     wheelSize?: number
 }
@@ -19,13 +18,27 @@ export function WheelSection({
     availableGhosts,
     onWheelComplete,
     onReset,
-    spunGhost,
-    wheelSize: initialWheelSize,
+    spunGhosts,
 }: Props) {
     const { t, i18n } = useTranslation(ENameSpaces.MAIN_MODE)
     const wheelRef = useRef<WheelOfNamesHandle>(null)
     const availableCount = availableGhosts.length
-    const [wheelSize, setWheelSize] = useState(() => initialWheelSize ?? 380)
+
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [wheelItemsSnapshot, setWheelItemsSnapshot] = useState<Ghost[]>([])
+
+    const showModal = () => {
+        setWheelItemsSnapshot([...availableGhosts])
+        setIsModalOpen(true)
+    }
+
+    const handleOk = () => {
+        setIsModalOpen(false)
+    }
+
+    const handleCancel = () => {
+        setIsModalOpen(false)
+    }
 
     return (
         <>
@@ -33,7 +46,7 @@ export function WheelSection({
                 <div className="mb-3 flex flex-wrap items-center gap-4">
                     <button
                         type="button"
-                        onClick={() => wheelRef.current?.spin()}
+                        onClick={() => showModal()}
                         disabled={availableCount === 0}
                         className="rounded bg-amber-500 px-4 py-2 font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
@@ -51,52 +64,43 @@ export function WheelSection({
                             {t('wheel.count', { count: availableCount })}
                         </span>
                     )}
-                    <label className="flex items-center gap-2 text-sm">
-                        <span className="text-neutral-600">
-                            {t('wheel.sizeLabel')}:
-                        </span>
-                        <select
-                            value={wheelSize}
-                            onChange={(e) =>
-                                setWheelSize(Number(e.target.value))
-                            }
-                            className="rounded border border-neutral-400 bg-white px-2 py-1"
-                        >
-                            {WHEEL_SIZE_OPTIONS.map((size) => (
-                                <option key={size} value={size}>
-                                    {size}px
-                                </option>
-                            ))}
-                        </select>
-                    </label>
                 </div>
 
-                <div className="flex justify-center py-4">
-                    <WheelOfNames<Ghost>
-                        key={wheelSize}
-                        ref={wheelRef}
-                        items={availableGhosts}
-                        getLabel={(g) => t(`ghosts.${g.id}`)}
-                        onSpinComplete={onWheelComplete}
-                        disabled={availableCount === 0}
-                        size={wheelSize}
-                        durationMs={4000}
-                        fullRotations={6}
-                    />
-                </div>
+                <Modal
+                    title="Basic Modal"
+                    closable={{ 'aria-label': 'Custom Close Button' }}
+                    open={isModalOpen}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    afterOpenChange={(isOpen) => {
+                        if (isOpen) wheelRef.current?.spin()
+                    }}
+                    footer={null}
+                >
+                    <div className="flex justify-center py-4">
+                        <WheelOfNames<Ghost>
+                            ref={wheelRef}
+                            items={wheelItemsSnapshot}
+                            getLabel={(g) => t(`ghosts.${g.id}`)}
+                            onSpinComplete={onWheelComplete}
+                            disabled={wheelItemsSnapshot.length === 0}
+                            durationMs={4000}
+                            fullRotations={6}
+                        />
+                    </div>
+                </Modal>
             </section>
 
-            {spunGhost && (
+            {spunGhosts && (
                 <section
                     key={`result-${i18n.language}`}
-                    className="rounded-lg border-2 border-amber-500 bg-amber-50 p-4"
+                    className="flex gap-2 p-4"
                 >
-                    <h2 className="mb-2 text-lg font-semibold">
-                        {t('wheel.resultTitle')}
-                    </h2>
-                    <p className="text-xl font-bold text-amber-800">
-                        {t(`ghosts.${spunGhost.id}`)}
-                    </p>
+                    {spunGhosts.map((ghost) => (
+                        <p className="p-1 text-xl w-fit font-bold text-amber-800 first:border-2 first:border-amber-500 first:rounded-2xl [:not(:first-child)]:line-through">
+                            {t(`ghosts.${ghost.id}`)}
+                        </p>
+                    ))}
                 </section>
             )}
         </>

@@ -5,7 +5,7 @@ const en = {
         hint: "Turn on evidence you've found — ghosts that don't have it will be crossed out.",
         emf5: 'EMF Level 5',
         dots: 'D.O.T.S. Projector',
-        fingerprints: 'Fingerprints',
+        ultraviolet: 'Ultraviolet',
         ghostOrb: 'Ghost Orbs',
         ghostWriting: 'Ghost Writing',
         spiritBox: 'Spirit Box',
@@ -38,6 +38,9 @@ const en = {
         moroi: 'Moroi',
         deogen: 'Deogen',
         thaye: 'Thaye',
+        dayan: 'Dayan',
+        gallu: 'Gallu',
+        obambo: 'Obambo',
     },
     wheel: {
         spinButton: 'Spin the wheel',

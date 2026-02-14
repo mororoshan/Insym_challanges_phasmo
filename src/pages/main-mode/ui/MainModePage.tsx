@@ -36,7 +36,7 @@ export function MainModePage() {
                 availableGhosts={availableGhosts}
                 onWheelComplete={onWheelComplete}
                 onReset={reset}
-                spunGhost={spunGhost}
+                spunGhosts={spunGhost}
             />
         </main>
     )
