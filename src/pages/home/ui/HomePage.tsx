@@ -8,7 +8,6 @@ export function HomePage() {
         <main>
             <h1>{t('hello')}</h1>
             <p>Welcome to the app.</p>
-            
         </main>
     )
 }

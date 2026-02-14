@@ -17,6 +17,9 @@ export function Header({}: Props) {
                     <Link to="/settings" className="text-inherit hover:underline">
                         Settings
                     </Link>
+                    <Link to="/main-mode" className="text-inherit hover:underline">
+                        Main mode
+                    </Link>
                 </div>
                 <LanguageSwitcher />
             </nav>

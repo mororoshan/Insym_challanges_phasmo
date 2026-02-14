@@ -1,4 +1,5 @@
 export enum ENameSpaces {
-    COMMON = 'common',    
+    COMMON = 'common',
     MAIN_PAGE = 'main_page',
+    MAIN_MODE = 'main_mode',
 }
