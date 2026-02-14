@@ -8,6 +8,7 @@ import {
 
 export type WheelOfNamesHandle = {
     spin: () => void
+    isSpinning: () => boolean
 }
 
 type Props<T> = {
@@ -86,20 +87,24 @@ function drawWheel<T>(
         ctx.rotate(midAngle)
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.font = 'bold 13px system-ui, sans-serif'
+        // Scale font with radius so labels stay readable at any wheel size
+        const fontPx = Math.round(Math.max(9, Math.min(36, radius * 0.09)))
+        ctx.font = `bold ${fontPx}px system-ui, sans-serif`
         ctx.fillStyle = TEXT_COLOR
 
         const label = getLabel(items[i])
-        const maxLen = radius > 80 ? 14 : 10
+        // Allow longer labels when wheel (and font) is larger
+        const maxLen = Math.max(10, Math.min(24, Math.round(radius / 8)))
         const truncated =
             label.length > maxLen ? label.slice(0, maxLen - 1) + '…' : label
         ctx.fillText(truncated, 0, 0)
         ctx.restore()
     }
 
-    // Center circle
+    // Center circle — scale with wheel size
+    const centerRadius = Math.max(8, Math.min(40, radius * 0.06))
     ctx.beginPath()
-    ctx.arc(centerX, centerY, 14, 0, 2 * Math.PI)
+    ctx.arc(centerX, centerY, centerRadius, 0, 2 * Math.PI)
     ctx.fillStyle = CENTER_COLOR
     ctx.fill()
     ctx.strokeStyle = BORDER_COLOR
@@ -172,12 +177,10 @@ function WheelOfNamesInner<T>(
         const n = items.length
         const segmentAngleDeg = 360 / n
         const currentMod = ((rotationRef.current % 360) + 360) % 360
-        // Pointer at top (canvas -90°). We rotate so the *start* of segment `index` is at the top; the segment
-        // just clockwise (under the pointer tip) is then segment index. But canvas arc() draws clockwise from start
-        // to end, so segment 0 is the wedge from -90° going clockwise. So the wedge that contains the top (-90°)
-        // is the one whose start is just after -90° going counterclockwise, i.e. the segment we draw before the one at top.
-        // So the segment under the pointer is actually (index - 1 + n) % n when we put start of index at top.
-        const targetModExact = (360 - ((index * segmentAngleDeg) % 360)) % 360
+        // Pointer at right (3 o'clock, canvas 0°). We rotate so the selected segment lands at the right;
+        // the segment counterclockwise from the pointer is the winner (same logic as before, with pointer angle +90°).
+        const targetModExact =
+            (90 - ((index * segmentAngleDeg) % 360) + 360) % 360
         const randomOffsetInSegment = Math.random() * segmentAngleDeg
         const targetMod = (targetModExact + randomOffsetInSegment) % 360
         const extra = (targetMod - currentMod + 360) % 360
@@ -212,7 +215,8 @@ function WheelOfNamesInner<T>(
         animationRef.current = requestAnimationFrame(tick)
     }, [disabled, fullRotations, durationMs, onSpinComplete, draw])
 
-    useImperativeHandle(ref, () => ({ spin }), [spin])
+    const isSpinning = useCallback(() => isSpinningRef.current, [])
+    useImperativeHandle(ref, () => ({ spin, isSpinning }), [spin, isSpinning])
 
     useEffect(() => {
         return () => {
@@ -233,30 +237,32 @@ function WheelOfNamesInner<T>(
         )
     }
 
+    const canvasTop = 16
+    const extraWidth = 48 // space for pointer on the right
+    const canvasLeft = extraWidth / 2 // flex items-center
     return (
         <div
             className="relative flex flex-col items-center"
-            style={{ width: size + 32, height: size + 40 }}
+            style={{ width: size + extraWidth, height: size + 32 }}
         >
-            {/* Pointer at top (12 o'clock) */}
+            <canvas
+                ref={canvasRef}
+                className="rounded-full shadow-lg"
+                style={{ display: 'block', marginTop: canvasTop }}
+            />
+            {/* Pointer at right (3 o'clock) so the winning label lands horizontal and readable */}
             <div
                 className="absolute z-10"
                 style={{
-                    top: 0,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
+                    top: canvasTop + size / 2,
+                    left: canvasLeft + size - 35,
+                    transform: 'translateY(-50%)',
                     width: 0,
                     height: 0,
-                    borderLeft: '12px solid transparent',
-                    borderRight: '12px solid transparent',
-                    borderTop: '16px solid #d97706',
+                    borderTop: '12px solid transparent',
+                    borderBottom: '12px solid transparent',
+                    borderRight: '16px solid #d97706',
                 }}
-            />
-
-            <canvas
-                ref={canvasRef}
-                className="mt-4 rounded-full shadow-lg"
-                style={{ display: 'block' }}
             />
         </div>
     )

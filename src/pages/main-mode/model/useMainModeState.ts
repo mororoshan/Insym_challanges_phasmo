@@ -5,8 +5,18 @@ import {
     type Ghost,
     type GhostId,
 } from '@/shared/data/phasmophobia'
+import type { Roll } from '@/shared/types/session'
 import { SessionsStoreContext } from '@/app/store'
 import { MODE_IDS } from '@/shared/types/session'
+
+function rollsToGhosts(rolls: Roll[]): Ghost[] {
+    return [...rolls].reverse().map((roll) => {
+        const ghost = GHOSTS.find((g) => g.id === roll.itemId)
+        if (ghost) return ghost
+        const s = roll.itemSnapshot as { id: GhostId; name: string; evidence: EvidenceId[] }
+        return { id: s.id, name: s.name ?? String(s.id), evidence: s.evidence ?? [] }
+    })
+}
 
 function isGhostCrossedOut(
     ghost: Ghost,
@@ -28,7 +38,12 @@ export function useMainModeState() {
     const [manualCrossOut, setManualCrossOut] = useState<Set<GhostId>>(
         () => new Set()
     )
-    const [spunGhosts, setSpunGhosts] = useState<Ghost[] | null>(null)
+
+    const session = sessionsStore.currentSession
+    const spunGhosts =
+        session?.modeId === MODE_IDS.MAIN && session.rolls.length > 0
+            ? rollsToGhosts(session.rolls)
+            : null
 
     const crossedOutGhostIds = useMemo(() => {
         const set = new Set<GhostId>()
@@ -65,7 +80,6 @@ export function useMainModeState() {
 
     const onWheelComplete = useCallback(
         (ghost: Ghost) => {
-            setSpunGhosts((prev) => (prev ? [ghost, ...prev] : [ghost]))
             toggleGhostCrossOut(ghost.id)
             sessionsStore.addRoll(MODE_IDS.MAIN, {
                 itemId: ghost.id,
@@ -84,7 +98,6 @@ export function useMainModeState() {
         sessionsStore.endCurrentSession()
         setSelectedEvidence(new Set())
         setManualCrossOut(new Set())
-        setSpunGhosts(null)
     }
 
     return {

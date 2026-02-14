@@ -2,6 +2,8 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import type { Roll, RollSession } from '@/shared/types/session'
 import { sessionsDb } from '@/shared/lib/indexed-db/sessionsDb'
 
+const CURRENT_SESSION_STORAGE_KEY = 'insum_current_session_id'
+
 function generateId(): string {
     return crypto.randomUUID()
 }
@@ -22,8 +24,16 @@ export class SessionsStore {
         this.isLoading = true
         try {
             const list = await sessionsDb.getAll()
+            const savedCurrentId =
+                typeof localStorage !== 'undefined'
+                    ? localStorage.getItem(CURRENT_SESSION_STORAGE_KEY)
+                    : null
             runInAction(() => {
                 this.sessions = list
+                this.currentSession =
+                    (savedCurrentId &&
+                        list.find((s) => s.id === savedCurrentId)) ||
+                    null
                 this.isHydrated = true
             })
         } finally {
@@ -47,6 +57,9 @@ export class SessionsStore {
         }
         this.currentSession = updated
         this.sessions = [updated, ...this.sessions.filter((s) => s.id !== updated.id)]
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(CURRENT_SESSION_STORAGE_KEY, updated.id)
+        }
         await sessionsDb.put(updated)
     }
 
@@ -64,6 +77,9 @@ export class SessionsStore {
             this.currentSession = session
             this.sessions = [session, ...this.sessions]
         })
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(CURRENT_SESSION_STORAGE_KEY, session.id)
+        }
         await sessionsDb.put(session)
         return session
     }
@@ -71,6 +87,9 @@ export class SessionsStore {
     /** End current session (e.g. on reset). Next addRoll will create a new session. */
     endCurrentSession() {
         this.currentSession = null
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(CURRENT_SESSION_STORAGE_KEY)
+        }
     }
 
     getSessionsByMode(modeId: string): RollSession[] {
@@ -85,7 +104,12 @@ export class SessionsStore {
         await sessionsDb.delete(id)
         runInAction(() => {
             this.sessions = this.sessions.filter((s) => s.id !== id)
-            if (this.currentSession?.id === id) this.currentSession = null
+            if (this.currentSession?.id === id) {
+                this.currentSession = null
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.removeItem(CURRENT_SESSION_STORAGE_KEY)
+                }
+            }
         })
     }
 

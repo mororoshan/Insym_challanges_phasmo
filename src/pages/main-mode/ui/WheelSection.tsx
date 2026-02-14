@@ -3,7 +3,7 @@ import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { WheelOfNames, type WheelOfNamesHandle } from '@/widgets/WheelOfNames'
 import type { Ghost } from '@/shared/data/phasmophobia'
-import { Modal } from 'antd'
+import { AppModal } from '@/shared/ui/AppModal'
 import { HistoryModal } from './HistoryModal'
 
 type Props = {
@@ -39,6 +39,7 @@ export function WheelSection({
     }
 
     const handleCancel = () => {
+        if (wheelRef.current?.isSpinning()) return
         setIsModalOpen(false)
     }
 
@@ -75,9 +76,15 @@ export function WheelSection({
                     )}
                 </div>
 
-                <Modal
-                    title="Basic Modal"
-                    closable={{ 'aria-label': 'Custom Close Button' }}
+                <AppModal
+                    centered
+                    closable={false}
+                    styles={{
+                        container: {
+                            boxShadow: 'none',
+                            backgroundColor: 'transparent',
+                        },
+                    }}
                     open={isModalOpen}
                     onOk={handleOk}
                     onCancel={handleCancel}
@@ -95,9 +102,10 @@ export function WheelSection({
                             disabled={wheelItemsSnapshot.length === 0}
                             durationMs={4000}
                             fullRotations={6}
+                            size={800}
                         />
                     </div>
-                </Modal>
+                </AppModal>
 
                 <HistoryModal
                     open={isHistoryOpen}

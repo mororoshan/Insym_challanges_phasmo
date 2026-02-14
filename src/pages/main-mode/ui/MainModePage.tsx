@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { useMainModeState } from '../model'
@@ -5,7 +6,7 @@ import { EvidenceSection } from './EvidenceSection'
 import { GhostList } from './GhostList'
 import { WheelSection } from './WheelSection'
 
-export function MainModePage() {
+export const MainModePage = observer(function MainModePage() {
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
     const {
         selectedEvidence,
@@ -40,4 +41,4 @@ export function MainModePage() {
             />
         </main>
     )
-}
+})

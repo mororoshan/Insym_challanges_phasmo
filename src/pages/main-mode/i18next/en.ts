@@ -57,6 +57,10 @@ const en = {
         time: 'Time',
         rolls: 'Rolls',
         empty: 'No sessions yet. Spin the wheel and reset to create sessions.',
+        edit: 'Edit',
+        done: 'Done',
+        remove: 'Remove',
+        removeConfirm: 'Remove this session from history?',
     },
 }
 

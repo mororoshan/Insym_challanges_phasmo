@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
-import { Divider, Modal } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Divider, Popconfirm } from 'antd'
+import { AppModal } from '@/shared/ui/AppModal'
 import { observer } from 'mobx-react-lite'
 import { useTranslation } from 'react-i18next'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
@@ -10,6 +11,32 @@ import type { RollSession } from '@/shared/types/session'
 type Props = {
     open: boolean
     onClose: () => void
+}
+
+type RemoveSessionButtonProps = {
+    onRemove: () => void | Promise<void>
+    removeLabel: string
+    removeConfirm: string
+}
+
+function RemoveSessionButton({
+    onRemove,
+    removeLabel,
+    removeConfirm,
+}: RemoveSessionButtonProps) {
+    return (
+        <Popconfirm
+            title={removeConfirm}
+            onConfirm={() => void onRemove()}
+            okText={removeLabel}
+            okButtonProps={{ danger: true }}
+            cancelButtonProps={{ autoFocus: true }}
+        >
+            <Button type="text" size="small" danger aria-label={removeLabel}>
+                {removeLabel}
+            </Button>
+        </Popconfirm>
+    )
 }
 
 function groupSessionsByDate(
@@ -33,6 +60,11 @@ export const HistoryModal = observer(function HistoryModal({
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
     const store = useSessionsStore()
     const sessions = store.getSessionsByMode(MODE_IDS.MAIN)
+    const [isEditMode, setIsEditMode] = useState(false)
+
+    useEffect(() => {
+        if (!open) setIsEditMode(false)
+    }, [open])
 
     const byDate = useMemo(() => groupSessionsByDate(sessions), [sessions])
     const sortedDates = useMemo(
@@ -40,29 +72,58 @@ export const HistoryModal = observer(function HistoryModal({
         [byDate]
     )
 
+    const modalTitle = (
+        <div className="flex items-start justify-start gap-4 text-white">
+            <span>{t('history.title')}</span>
+            {sessions.length > 0 && (
+                <Button
+                    type="text"
+                    size="small"
+                    onClick={() => setIsEditMode((prev) => !prev)}
+                    className="text-white!"
+                    aria-label={
+                        isEditMode ? t('history.done') : t('history.edit')
+                    }
+                >
+                    {isEditMode ? t('history.done') : t('history.edit')}
+                </Button>
+            )}
+        </div>
+    )
+
     return (
-        <Modal
-            title={t('history.title')}
+        <AppModal
+            centered
+            title={modalTitle}
             open={open}
             onCancel={onClose}
             footer={null}
             width={560}
+            styles={{
+                container: {
+                    background: '#242424',
+                },
+            }}
         >
             {sessions.length === 0 ? (
-                <p className="py-4 text-neutral-500">{t('history.empty')}</p>
+                <p className="py-4 text-neutral-100">{t('history.empty')}</p>
             ) : (
                 <div className="max-h-[70vh] overflow-auto">
                     {sortedDates.map((dateKey) => {
                         const [y, m, d] = dateKey.split('-').map(Number)
+                        const now = new Date()
+                        const isCurrentYear = y === now.getFullYear()
+                        const isCurrentMonth =
+                            isCurrentYear && m === now.getMonth() + 1
                         const dateLabel = new Date(
                             y,
                             m - 1,
                             d
                         ).toLocaleDateString(undefined, {
                             weekday: 'short',
-                            month: 'short',
+                            ...(isCurrentMonth ? {} : { month: 'short' }),
                             day: 'numeric',
-                            year: 'numeric',
+                            ...(isCurrentYear ? {} : { year: 'numeric' }),
                         })
                         const daySessions = byDate.get(dateKey) ?? []
                         return (
@@ -78,7 +139,7 @@ export const HistoryModal = observer(function HistoryModal({
                                         {daySessions.map((session) => (
                                             <tr
                                                 key={session.id}
-                                                className="border-b border-neutral-100 hover:bg-amber-50/50"
+                                                className="border-b border-neutral-600 hover:bg-amber-50/50"
                                             >
                                                 <td className="py-2 pr-4 text-sm text-neutral-600 whitespace-nowrap w-0">
                                                     {new Date(
@@ -91,7 +152,7 @@ export const HistoryModal = observer(function HistoryModal({
                                                         }
                                                     )}
                                                 </td>
-                                                <td className="py-2 text-sm text-amber-800">
+                                                <td className="py-2 text-sm text-white">
                                                     {session.rolls.length === 0
                                                         ? '—'
                                                         : session.rolls
@@ -102,6 +163,23 @@ export const HistoryModal = observer(function HistoryModal({
                                                               )
                                                               .join(' → ')}
                                                 </td>
+                                                {isEditMode && (
+                                                    <td className="py-2 pl-2 w-0">
+                                                        <RemoveSessionButton
+                                                            onRemove={() =>
+                                                                store.deleteSession(
+                                                                    session.id
+                                                                )
+                                                            }
+                                                            removeLabel={t(
+                                                                'history.remove'
+                                                            )}
+                                                            removeConfirm={t(
+                                                                'history.removeConfirm'
+                                                            )}
+                                                        />
+                                                    </td>
+                                                )}
                                             </tr>
                                         ))}
                                     </tbody>
@@ -111,6 +189,6 @@ export const HistoryModal = observer(function HistoryModal({
                     })}
                 </div>
             )}
-        </Modal>
+        </AppModal>
     )
 })
