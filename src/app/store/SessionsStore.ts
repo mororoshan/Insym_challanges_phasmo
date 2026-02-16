@@ -63,8 +63,11 @@ export class SessionsStore {
         await sessionsDb.put(updated)
     }
 
-    /** Start a new session for the next rolls. Returns the new session (and sets it as current). */
-    async startNewSession(modeId: string): Promise<RollSession> {
+    /** Start a new session for the next rolls. Returns the new session (and sets it as current). Not persisted until the first roll or end with outcome (avoids empty runs in history). */
+    async startNewSession(
+        modeId: string,
+        options?: { presetId?: string }
+    ): Promise<RollSession> {
         const now = Date.now()
         const session: RollSession = {
             id: generateId(),
@@ -72,19 +75,19 @@ export class SessionsStore {
             createdAt: now,
             updatedAt: now,
             rolls: [],
+            ...(options?.presetId != null && { presetId: options.presetId }),
         }
         runInAction(() => {
             this.currentSession = session
-            this.sessions = [session, ...this.sessions]
+            // Do not add to this.sessions or DB yet; addRoll or endCurrentSession(meta) will persist
         })
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(CURRENT_SESSION_STORAGE_KEY, session.id)
         }
-        await sessionsDb.put(session)
         return session
     }
 
-    /** End current session (e.g. on reset). Saves optional metadata then clears current. */
+    /** End current session (e.g. on reset). Saves optional metadata then clears current. Does not persist empty runs (no rolls). */
     async endCurrentSession(meta?: {
         itemRollOrder?: string[]
         believersWon?: boolean
@@ -92,7 +95,11 @@ export class SessionsStore {
     }) {
         const session = this.currentSession
         try {
-            if (session && (meta?.itemRollOrder?.length || meta?.believersWon !== undefined)) {
+            const hasOutcome =
+                session &&
+                (meta?.itemRollOrder?.length || meta?.believersWon !== undefined)
+            const nonEmpty = session && session.rolls.length > 0
+            if (hasOutcome && nonEmpty) {
                 const updated: RollSession = {
                     ...session,
                     updatedAt: Date.now(),

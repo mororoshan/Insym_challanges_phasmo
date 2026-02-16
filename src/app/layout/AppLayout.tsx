@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 export function AppLayout() {
     return (
-        <div className="flex min-h-screen w-full flex-col">
+        <div className="flex min-h-screen w-full flex-col p-1">
             <header className="shrink-0">
                 <Header />
             </header>

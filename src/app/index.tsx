@@ -1,4 +1,5 @@
 import { registerNotFoundI18n } from '@/pages/not-found/i18next'
+import { registerSettingsI18n } from '@/pages/settings/i18next'
 import { registerCommonI18n } from '@/shared/config/i18next/common'
 import { registerMainPageI18n } from '@/pages/home/i18next'
 import { registerMainModeI18n } from '@/pages/main-mode/i18next'
@@ -9,6 +10,7 @@ function App() {
     registerMainPageI18n()
     registerMainModeI18n()
     registerNotFoundI18n()
+    registerSettingsI18n()
     return <AppRouter />
 }
 

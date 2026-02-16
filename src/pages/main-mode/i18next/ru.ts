@@ -1,5 +1,19 @@
 const ru = {
     title: 'Режим игры',
+    challengeWheel: {
+        title: 'Выберите челлендж',
+        presetBadgeTitle: 'Активный пресет челленджа',
+    },
+    presets: {
+        classic: 'Классика',
+        custom: 'Свой',
+        'apocalypse-lite': 'Апокалипсис-лайт',
+        'wheel-only': 'Только колесо',
+        'one-evidence-max': 'Макс одна улика',
+        'no-truck': 'Без фургона',
+        'streamer-torture': 'Мучения стримера',
+        'chat-decides': 'Всё решает чат',
+    },
     evidence: {
         title: 'Улики',
         hint: 'Включайте найденные улики — призраки без этой улики будут вычёркиваться.',

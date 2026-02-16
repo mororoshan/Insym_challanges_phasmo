@@ -12,6 +12,7 @@ export interface Roll {
  * One session of rolls (e.g. one game). modeId allows multiple app modes to share the same store.
  * itemRollOrder: optional list of item ids (evidence/side evidence) rolled from the items wheel, in order (saved on reset).
  * believersWon / actualGhostId: optional game outcome for win/lose statistics (set when ending the game).
+ * presetId: optional challenge preset this session was played under (for history/stats per preset).
  */
 export interface RollSession {
     id: string
@@ -25,6 +26,8 @@ export interface RollSession {
     believersWon?: boolean
     /** When believers lost, the ghost that was actually in the game (for statistics). */
     actualGhostId?: string
+    /** Challenge preset this session was played under. Undefined = legacy session (treat as Classic). */
+    presetId?: string
 }
 
 export const SESSIONS_DB_NAME = 'insum_sessions'

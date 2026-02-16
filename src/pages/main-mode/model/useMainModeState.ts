@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import {
     ALL_WHEEL_ITEMS,
     GHOSTS,
@@ -6,9 +6,25 @@ import {
     type Ghost,
     type GhostId,
 } from '@/shared/data/phasmophobia'
+import { getDefaultPreset, getPresetById } from '@/shared/data/presets'
+import type { Preset } from '@/shared/types/preset'
+import type { CustomGameFeatures } from '@/shared/types/gameMode'
 import type { Roll } from '@/shared/types/session'
-import { SessionsStoreContext } from '@/app/store'
+import { SessionsStoreContext, useGameModeSettings } from '@/app/store'
 import { MODE_IDS } from '@/shared/types/session'
+
+function presetFromCustomFeatures(features: CustomGameFeatures): Preset {
+    return {
+        id: 'custom',
+        name: 'Custom',
+        wheels: {
+            ghostWheel: features.ghostWheel,
+            itemWheel: features.itemWheel,
+        },
+        evidenceSection: features.evidenceSection,
+        ghostList: features.ghostList,
+    }
+}
 
 function rollsToGhosts(rolls: Roll[]): Ghost[] {
     return [...rolls].reverse().map((roll) => {
@@ -33,18 +49,40 @@ function isGhostCrossedOut(
 
 export function useMainModeState() {
     const sessionsStore = useContext(SessionsStoreContext)
+    const { gameMode, customFeatures } = useGameModeSettings()
     const [selectedEvidence, setSelectedEvidence] = useState<Set<EvidenceId>>(
         () => new Set()
     )
     const [manualCrossOut, setManualCrossOut] = useState<Set<GhostId>>(
         () => new Set()
     )
-    const [itemsInWheel, setItemsInWheel] = useState<string[]>(() =>
-        ALL_WHEEL_ITEMS.map((i) => i.id)
-    )
+    const [itemsInWheel, setItemsInWheel] = useState<string[]>(() => [])
     const [availableForUse, setAvailableForUse] = useState<string[]>([])
 
     const session = sessionsStore.currentSession
+
+    const activePreset = useMemo<Preset>(() => {
+        if (session?.presetId) {
+            const p = getPresetById(session.presetId)
+            if (p) return p
+        }
+        if (gameMode === 'custom') return presetFromCustomFeatures(customFeatures)
+        return getDefaultPreset()
+    }, [session?.presetId, gameMode, customFeatures])
+    const initialItemsInWheel = useMemo(
+        () =>
+            ALL_WHEEL_ITEMS.filter(
+                (i) => !activePreset.lockedItems?.includes(i.id)
+            ).map((i) => i.id),
+        [activePreset]
+    )
+
+    useEffect(() => {
+        if (session?.modeId === MODE_IDS.MAIN) {
+            setItemsInWheel(initialItemsInWheel)
+            setAvailableForUse([])
+        }
+    }, [session?.id, initialItemsInWheel])
     const spunGhosts =
         session?.modeId === MODE_IDS.MAIN && session.rolls.length > 0
             ? rollsToGhosts(session.rolls)
@@ -117,7 +155,7 @@ export function useMainModeState() {
             } finally {
                 setSelectedEvidence(new Set())
                 setManualCrossOut(new Set())
-                setItemsInWheel(ALL_WHEEL_ITEMS.map((i) => i.id))
+                setItemsInWheel([])
                 setAvailableForUse([])
             }
         },
@@ -125,6 +163,7 @@ export function useMainModeState() {
     )
 
     return {
+        activePreset,
         selectedEvidence,
         crossedOutGhostIds,
         availableGhosts,

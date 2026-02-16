@@ -3,4 +3,5 @@ export enum ENameSpaces {
     MAIN_PAGE = 'main_page',
     MAIN_MODE = 'main_mode',
     NOT_FOUND = 'not_found',
+    SETTINGS = 'settings',
 }

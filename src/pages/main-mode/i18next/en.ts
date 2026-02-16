@@ -1,5 +1,19 @@
 const en = {
     title: 'Main mode',
+    challengeWheel: {
+        title: 'Pick a challenge',
+        presetBadgeTitle: 'Active challenge preset',
+    },
+    presets: {
+        classic: 'Classic',
+        custom: 'Custom',
+        'apocalypse-lite': 'Apocalypse-Lite',
+        'wheel-only': 'Wheel Only',
+        'one-evidence-max': 'One Evidence Max',
+        'no-truck': 'No Truck',
+        'streamer-torture': 'Streamer Torture',
+        'chat-decides': 'Chat Decides Everything',
+    },
     evidence: {
         title: 'Evidence',
         hint: "Turn on evidence you've found — ghosts that don't have it will be crossed out.",

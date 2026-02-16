@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { LanguageSwitcher } from '@/widgets/LanguageSwitcher'
 
 type Props = {}
 
@@ -11,20 +10,20 @@ export function Header({}: Props) {
                     <Link to="/" className="text-inherit hover:underline">
                         Home
                     </Link>
-                    <Link
-                        to="/settings"
-                        className="text-inherit hover:underline"
-                    >
-                        Settings
-                    </Link>
+
                     <Link
                         to="/main-mode"
                         className="text-inherit hover:underline"
                     >
                         Main mode
                     </Link>
+                    <Link
+                        to="/settings"
+                        className="text-inherit hover:underline"
+                    >
+                        Settings
+                    </Link>
                 </div>
-                <LanguageSwitcher />
             </nav>
         </div>
     )

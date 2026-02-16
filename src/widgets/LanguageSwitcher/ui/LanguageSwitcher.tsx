@@ -21,7 +21,7 @@ export function LanguageSwitcher({}: Props) {
 
     return (
         <div
-            className="flex items-center gap-1 rounded-lg border border-[#646cff]/30 bg-[#1a1a1a]/50 px-1 py-0.5"
+            className="flex items-center justify-center gap-1 rounded-lg border-0 bg-[#1a1a1a]/50 px-1 py-0.5"
             role="group"
             aria-label="Language"
         >

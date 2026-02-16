@@ -3,6 +3,10 @@ export {
     SessionsStoreContext,
     SessionsStoreProvider,
 } from './SessionsStoreContext'
+export {
+    GameModeSettingsProvider,
+    useGameModeSettings,
+} from './GameModeSettingsContext'
 export { useSessionsStore } from './useSessionsStore'
 export type { Roll, RollSession } from '@/shared/types/session'
 
