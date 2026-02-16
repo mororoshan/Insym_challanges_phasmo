@@ -7,6 +7,7 @@ import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useSessionsStore } from '@/app/store'
 import { MODE_IDS } from '@/shared/types/session'
 import type { RollSession } from '@/shared/types/session'
+import { EVIDENCE } from '@/shared/data/phasmophobia'
 
 type Props = {
     open: boolean
@@ -159,15 +160,61 @@ export const HistoryModal = observer(function HistoryModal({
                                                     )}
                                                 </td>
                                                 <td className="py-2 text-sm text-white">
-                                                    {session.rolls.length === 0
-                                                        ? '—'
-                                                        : session.rolls
-                                                              .map((r) =>
-                                                                  t(
-                                                                      `ghosts.${r.itemId}`
+                                                    <div>
+                                                        {session.rolls.length === 0
+                                                            ? '—'
+                                                            : session.rolls
+                                                                  .map((r) =>
+                                                                      t(
+                                                                          `ghosts.${r.itemId}`
+                                                                      )
                                                                   )
-                                                              )
-                                                              .join(' → ')}
+                                                                  .join(' → ')}
+                                                    </div>
+                                                    {session.itemRollOrder &&
+                                                        session.itemRollOrder
+                                                            .length > 0 && (
+                                                            <div className="mt-1 text-xs text-neutral-400">
+                                                                {t(
+                                                                    'history.itemsOrder'
+                                                                )}:{' '}
+                                                                {session.itemRollOrder
+                                                                    .map(
+                                                                        (id) =>
+                                                                            EVIDENCE.some(
+                                                                                (e) =>
+                                                                                    e.id ===
+                                                                                    id
+                                                                            )
+                                                                                ? t(
+                                                                                      `evidence.${id}`
+                                                                                  )
+                                                                                : t(
+                                                                                      `sideEvidence.${id}`
+                                                                                  )
+                                                                    )
+                                                                    .join(
+                                                                        ' → '
+                                                                    )}
+                                                            </div>
+                                                        )}
+                                                    {session.believersWon !== undefined && (
+                                                        <div className="mt-1">
+                                                            {session.believersWon ? (
+                                                                <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-emerald-500/20 text-emerald-300">
+                                                                    {t('history.won')}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-red-500/20 text-red-300">
+                                                                    {session.actualGhostId
+                                                                        ? t('history.lostWithGhost', {
+                                                                              ghost: t(`ghosts.${session.actualGhostId}`),
+                                                                          })
+                                                                        : t('history.lost')}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 {isEditMode && (
                                                     <td className="py-2 pl-2 w-0">

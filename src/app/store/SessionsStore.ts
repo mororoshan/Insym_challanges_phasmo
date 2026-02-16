@@ -84,11 +84,34 @@ export class SessionsStore {
         return session
     }
 
-    /** End current session (e.g. on reset). Next addRoll will create a new session. */
-    endCurrentSession() {
-        this.currentSession = null
-        if (typeof localStorage !== 'undefined') {
-            localStorage.removeItem(CURRENT_SESSION_STORAGE_KEY)
+    /** End current session (e.g. on reset). Saves optional metadata then clears current. */
+    async endCurrentSession(meta?: {
+        itemRollOrder?: string[]
+        believersWon?: boolean
+        actualGhostId?: string
+    }) {
+        const session = this.currentSession
+        try {
+            if (session && (meta?.itemRollOrder?.length || meta?.believersWon !== undefined)) {
+                const updated: RollSession = {
+                    ...session,
+                    updatedAt: Date.now(),
+                    ...(meta?.itemRollOrder?.length && { itemRollOrder: meta.itemRollOrder }),
+                    ...(meta?.believersWon !== undefined && { believersWon: meta.believersWon }),
+                    ...(meta?.actualGhostId != null && { actualGhostId: meta.actualGhostId }),
+                }
+                this.currentSession = updated
+                this.sessions = [
+                    updated,
+                    ...this.sessions.filter((s) => s.id !== updated.id),
+                ]
+                await sessionsDb.put(updated)
+            }
+        } finally {
+            this.currentSession = null
+            if (typeof localStorage !== 'undefined') {
+                localStorage.removeItem(CURRENT_SESSION_STORAGE_KEY)
+            }
         }
     }
 

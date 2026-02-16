@@ -9,7 +9,7 @@ import { HistoryModal } from './HistoryModal'
 type Props = {
     availableGhosts: Ghost[]
     onWheelComplete: (ghost: Ghost) => void
-    onReset: () => void
+    onEndGame: () => void
     spunGhosts: Ghost[] | null
     /** Initial wheel size in pixels (default 280). Ignored if not provided. */
     wheelSize?: number
@@ -18,7 +18,7 @@ type Props = {
 export function WheelSection({
     availableGhosts,
     onWheelComplete,
-    onReset,
+    onEndGame,
     spunGhosts,
 }: Props) {
     const { t, i18n } = useTranslation(ENameSpaces.MAIN_MODE)
@@ -83,10 +83,10 @@ export function WheelSection({
                     </button>
                     <button
                         type="button"
-                        onClick={onReset}
+                        onClick={onEndGame}
                         className="rounded border border-neutral-400 bg-white px-4 py-2 font-medium transition hover:bg-neutral-50"
                     >
-                        {t('wheel.resetButton')}
+                        {t('wheel.endGameButton')}
                     </button>
                     <button
                         type="button"
@@ -143,16 +143,24 @@ export function WheelSection({
                 />
             </section>
 
-            {spunGhosts && (
+            {spunGhosts && spunGhosts.length > 0 && (
                 <section
                     key={`result-${i18n.language}`}
-                    className="flex gap-2 p-4"
+                    className="rounded-lg border border-amber-200 bg-amber-50/50 p-3"
                 >
-                    {spunGhosts.map((ghost) => (
-                        <p className="p-1 text-xl w-fit font-bold text-amber-800 first:border-2 first:border-amber-500 first:rounded-2xl [:not(:first-child)]:line-through">
-                            {t(`ghosts.${ghost.id}`)}
-                        </p>
-                    ))}
+                    <h3 className="mb-2 text-sm font-medium text-amber-900">
+                        {t('wheel.resultTitle')}
+                    </h3>
+                    <ul className="flex flex-wrap gap-2">
+                        {spunGhosts.map((ghost, index) => (
+                            <li
+                                key={`${ghost.id}-${index}`}
+                                className="rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-900 [&:not(:first-child)]:line-through"
+                            >
+                                {t(`ghosts.${ghost.id}`)}
+                            </li>
+                        ))}
+                    </ul>
                 </section>
             )}
         </>

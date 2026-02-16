@@ -1,13 +1,19 @@
+import { useState } from 'react'
 import { observer } from 'mobx-react-lite'
+import { Switch } from 'antd'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { useMainModeState } from '../model'
+import { EndGameModal } from './EndGameModal'
 import { EvidenceSection } from './EvidenceSection'
 import { GhostList } from './GhostList'
+import { ItemWheelSection } from './ItemWheelSection'
 import { WheelSection } from './WheelSection'
 
 export const MainModePage = observer(function MainModePage() {
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
+    const [showItemsWheel, setShowItemsWheel] = useState(false)
+    const [endGameModalOpen, setEndGameModalOpen] = useState(false)
     const {
         selectedEvidence,
         crossedOutGhostIds,
@@ -16,7 +22,10 @@ export const MainModePage = observer(function MainModePage() {
         toggleEvidence,
         toggleGhostCrossOut,
         onWheelComplete,
-        reset,
+        itemsInWheel,
+        availableForUse,
+        onItemWheelComplete,
+        endGameWithResult,
     } = useMainModeState()
 
     return (
@@ -33,10 +42,35 @@ export const MainModePage = observer(function MainModePage() {
                 onToggleGhost={toggleGhostCrossOut}
             />
 
+            <section className="mb-6 flex items-center gap-2">
+                <Switch
+                    checked={showItemsWheel}
+                    onChange={setShowItemsWheel}
+                    aria-label={t('itemsWheel.showSection')}
+                />
+                <span className="text-sm">{t('itemsWheel.showSection')}</span>
+            </section>
+
+            {showItemsWheel && (
+                <ItemWheelSection
+                    itemsInWheel={itemsInWheel}
+                    availableForUse={availableForUse}
+                    onItemWheelComplete={onItemWheelComplete}
+                />
+            )}
+
+            <EndGameModal
+                open={endGameModalOpen}
+                onClose={() => setEndGameModalOpen(false)}
+                onConfirm={(believersWon, actualGhostId) => {
+                    void endGameWithResult(believersWon, actualGhostId)
+                    setEndGameModalOpen(false)
+                }}
+            />
             <WheelSection
                 availableGhosts={availableGhosts}
                 onWheelComplete={onWheelComplete}
-                onReset={reset}
+                onEndGame={() => setEndGameModalOpen(true)}
                 spunGhosts={spunGhost}
             />
         </main>

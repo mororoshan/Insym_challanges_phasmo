@@ -1,5 +1,6 @@
 import { useCallback, useContext, useMemo, useState } from 'react'
 import {
+    ALL_WHEEL_ITEMS,
     GHOSTS,
     type EvidenceId,
     type Ghost,
@@ -38,6 +39,10 @@ export function useMainModeState() {
     const [manualCrossOut, setManualCrossOut] = useState<Set<GhostId>>(
         () => new Set()
     )
+    const [itemsInWheel, setItemsInWheel] = useState<string[]>(() =>
+        ALL_WHEEL_ITEMS.map((i) => i.id)
+    )
+    const [availableForUse, setAvailableForUse] = useState<string[]>([])
 
     const session = sessionsStore.currentSession
     const spunGhosts =
@@ -94,11 +99,30 @@ export function useMainModeState() {
         [sessionsStore]
     )
 
-    const reset = () => {
-        sessionsStore.endCurrentSession()
-        setSelectedEvidence(new Set())
-        setManualCrossOut(new Set())
-    }
+    const onItemWheelComplete = useCallback((itemId: string) => {
+        setItemsInWheel((prev) => prev.filter((id) => id !== itemId))
+        setAvailableForUse((prev) => [...prev, itemId])
+    }, [])
+
+    const endGameWithResult = useCallback(
+        async (believersWon: boolean, actualGhostId?: GhostId) => {
+            try {
+                await sessionsStore.endCurrentSession({
+                    ...(availableForUse.length > 0 && {
+                        itemRollOrder: [...availableForUse],
+                    }),
+                    believersWon,
+                    ...(actualGhostId != null && { actualGhostId }),
+                })
+            } finally {
+                setSelectedEvidence(new Set())
+                setManualCrossOut(new Set())
+                setItemsInWheel(ALL_WHEEL_ITEMS.map((i) => i.id))
+                setAvailableForUse([])
+            }
+        },
+        [sessionsStore, availableForUse]
+    )
 
     return {
         selectedEvidence,
@@ -108,6 +132,9 @@ export function useMainModeState() {
         toggleEvidence,
         toggleGhostCrossOut,
         onWheelComplete,
-        reset,
+        itemsInWheel,
+        availableForUse,
+        onItemWheelComplete,
+        endGameWithResult,
     }
 }

@@ -117,13 +117,13 @@ function drawWheel<T>(
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         // Scale font with radius so labels stay readable at any wheel size
-        const fontPx = Math.round(Math.max(9, Math.min(36, radius * 0.09)))
+        const fontPx = Math.round(Math.max(8, Math.min(28, radius * 0.065)))
         ctx.font = `bold ${fontPx}px system-ui, sans-serif`
         ctx.fillStyle = TEXT_COLOR
 
         const label = getLabel(items[i])
         // Allow longer labels when wheel (and font) is larger
-        const maxLen = Math.max(10, Math.min(24, Math.round(radius / 8)))
+        const maxLen = Math.max(12, Math.min(28, Math.round(radius / 6)))
         const truncated =
             label.length > maxLen ? label.slice(0, maxLen - 1) + '…' : label
         ctx.fillText(truncated, 0, 0)
