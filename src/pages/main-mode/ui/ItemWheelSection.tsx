@@ -93,14 +93,14 @@ export function ItemWheelSection({
                         {t('itemsWheel.availableForUse')}
                     </h3>
                     <ul className="flex flex-wrap gap-2">
-                        {availableForUse.map((id) => {
+                        {availableForUse.map((id, index) => {
                             const item = getItemById(id)
                             const label = item
                                 ? getItemLabel(item)
                                 : id
                             return (
                                 <li
-                                    key={id}
+                                    key={`${id}-${index}`}
                                     className="rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-900"
                                 >
                                     {label}
