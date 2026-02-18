@@ -1,7 +1,6 @@
-import { useContext } from 'react'
 import { Radio, Switch } from 'antd'
 import { useTranslation } from 'react-i18next'
-import { SessionsStoreContext, useGameModeSettings } from '@/app/store'
+import { useSessionsStore, useGameModeSettings } from '@/app/store'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import type { CustomGameFeatures, GameModeType } from '@/shared/types/gameMode'
 import { LanguageSwitcher } from '@/widgets/LanguageSwitcher'
@@ -21,7 +20,7 @@ const CUSTOM_FEATURE_KEYS: { key: keyof CustomGameFeatures }[] = [
 
 export function SettingsPage() {
     const { t } = useTranslation(ENameSpaces.SETTINGS)
-    const sessionsStore = useContext(SessionsStoreContext)
+    const sessionsStore = useSessionsStore()
     const { gameMode, customFeatures, setGameMode, setCustomFeature } =
         useGameModeSettings()
 

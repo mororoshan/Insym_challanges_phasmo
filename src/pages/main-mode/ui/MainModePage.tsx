@@ -1,8 +1,8 @@
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
-import { SessionsStoreContext, useGameModeSettings } from '@/app/store'
+import { useSessionsStore, useGameModeSettings } from '@/app/store'
 import { MODE_IDS } from '@/shared/types/session'
 import { useMainModeState } from '../model'
 import { ChallengeWheelModal } from './ChallengeWheelModal'
@@ -14,7 +14,7 @@ import { WheelSection } from './WheelSection'
 
 export const MainModePage = observer(function MainModePage() {
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
-    const sessionsStore = useContext(SessionsStoreContext)
+    const sessionsStore = useSessionsStore()
     const { gameMode } = useGameModeSettings()
     const [endGameModalOpen, setEndGameModalOpen] = useState(false)
     const {

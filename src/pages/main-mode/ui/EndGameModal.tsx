@@ -92,7 +92,9 @@ export function EndGameModal({ open, onClose, onConfirm }: Props) {
                 type="primary"
                 onClick={handleBelieversWon}
                 style={
-                    hoveredBtn === 'won' ? primaryBtnHoverStyle : primaryBtnStyle
+                    hoveredBtn === 'won'
+                        ? primaryBtnHoverStyle
+                        : primaryBtnStyle
                 }
                 onMouseEnter={() => setHoveredBtn('won')}
                 onMouseLeave={() => setHoveredBtn(null)}
@@ -169,7 +171,9 @@ export function EndGameModal({ open, onClose, onConfirm }: Props) {
             }}
         >
             {isQuestionStep ? (
-                <p className="text-neutral-200">{t('endGame.believersWonQuestion')}</p>
+                <p className="text-neutral-200">
+                    {t('endGame.believersWonQuestion')}
+                </p>
             ) : (
                 <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
                     <p className="mb-3 text-sm text-neutral-400">

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
     ALL_WHEEL_ITEMS,
     GHOSTS,
@@ -10,7 +10,7 @@ import { getDefaultPreset, getPresetById } from '@/shared/data/presets'
 import type { Preset } from '@/shared/types/preset'
 import type { CustomGameFeatures } from '@/shared/types/gameMode'
 import type { Roll } from '@/shared/types/session'
-import { SessionsStoreContext, useGameModeSettings } from '@/app/store'
+import { useSessionsStore, useGameModeSettings } from '@/app/store'
 import { MODE_IDS } from '@/shared/types/session'
 
 function presetFromCustomFeatures(features: CustomGameFeatures): Preset {
@@ -48,7 +48,7 @@ function isGhostCrossedOut(
 }
 
 export function useMainModeState() {
-    const sessionsStore = useContext(SessionsStoreContext)
+    const sessionsStore = useSessionsStore()
     const { gameMode, customFeatures } = useGameModeSettings()
     const [selectedEvidence, setSelectedEvidence] = useState<Set<EvidenceId>>(
         () => new Set()

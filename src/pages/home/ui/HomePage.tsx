@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ROUTES } from '@/shared/config/routes'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 
@@ -54,7 +55,7 @@ export function HomePage() {
 
             <div className="flex justify-center">
                 <Link
-                    to="/main-mode"
+                    to={ROUTES.MAIN_MODE}
                     className="rounded-lg bg-amber-500 px-6 py-3 font-medium text-white transition hover:bg-amber-600"
                 >
                     {t('getStarted')} → {t('mainMode')}
