@@ -13,13 +13,16 @@ const childRoutes: RouteObject[] = [
     { path: '*', element: <NotFoundPage /> },
 ]
 
-const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <AppLayout />,
-        children: childRoutes,
-    },
-])
+const router = createBrowserRouter(
+    [
+        {
+            path: '/',
+            element: <AppLayout />,
+            children: childRoutes,
+        },
+    ],
+    { basename: '/Insym_challanges_phasmo' }
+)
 
 export function AppRouter() {
     return <RouterProvider router={router} />

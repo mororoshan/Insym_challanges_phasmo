@@ -6,6 +6,7 @@ import fs from 'fs'
 
 // https://vite.dev/config/
 export default defineConfig({
+    base: '/Insym_challanges_phasmo/',
     plugins: [react(), tailwindcss()],
     resolve: {
         alias: {
