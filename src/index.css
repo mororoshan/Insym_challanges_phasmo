@@ -62,20 +62,6 @@ button:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* End game modal footer: hover/disabled only (base from Button style prop) */
-.end-game-modal-footer .ant-btn:not(.ant-btn-primary):hover {
-    background: #525252;
-    border-color: #737373;
-    color: #fff;
-}
-.end-game-modal-footer .ant-btn-primary:hover:not(:disabled) {
-    background: #d97706;
-    color: #292524;
-}
-.end-game-modal-footer .ant-btn-primary:disabled {
-    opacity: 0.5;
-}
-
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;

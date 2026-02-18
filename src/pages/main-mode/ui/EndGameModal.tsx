@@ -14,10 +14,31 @@ type Props = {
     onConfirm: (believersWon: boolean, actualGhostId?: GhostId) => void
 }
 
+const defaultBtnStyle: CSSProperties = {
+    background: '#404040',
+    borderColor: '#525252',
+    color: '#e5e5e5',
+}
+const defaultBtnHoverStyle: CSSProperties = {
+    background: '#525252',
+    borderColor: '#737373',
+    color: '#fff',
+}
+const primaryBtnStyle: CSSProperties = {
+    background: '#f59e0b',
+    borderColor: 'transparent',
+    color: '#292524',
+}
+const primaryBtnHoverStyle: CSSProperties = {
+    background: '#d97706',
+    color: '#292524',
+}
+
 export function EndGameModal({ open, onClose, onConfirm }: Props) {
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
     const [step, setStep] = useState<Step>('question')
     const [selectedGhostId, setSelectedGhostId] = useState<GhostId | null>(null)
+    const [hoveredBtn, setHoveredBtn] = useState<string | null>(null)
 
     const handleClose = () => {
         setStep('question')
@@ -53,38 +74,55 @@ export function EndGameModal({ open, onClose, onConfirm }: Props) {
         </span>
     )
 
-    const defaultBtnStyle: CSSProperties = {
-        background: '#404040',
-        borderColor: '#525252',
-        color: '#e5e5e5',
-    }
-    const primaryBtnStyle: CSSProperties = {
-        background: '#f59e0b',
-        borderColor: 'transparent',
-        color: '#292524',
-    }
-
     const footer = isQuestionStep ? (
-        <div className="end-game-modal-footer flex justify-end gap-2">
-            <Button onClick={handleClose} style={defaultBtnStyle}>
+        <div className="flex justify-end gap-2">
+            <Button
+                onClick={handleClose}
+                style={
+                    hoveredBtn === 'cancel'
+                        ? defaultBtnHoverStyle
+                        : defaultBtnStyle
+                }
+                onMouseEnter={() => setHoveredBtn('cancel')}
+                onMouseLeave={() => setHoveredBtn(null)}
+            >
                 {t('endGame.cancel')}
             </Button>
             <Button
                 type="primary"
                 onClick={handleBelieversWon}
-                style={primaryBtnStyle}
+                style={
+                    hoveredBtn === 'won' ? primaryBtnHoverStyle : primaryBtnStyle
+                }
+                onMouseEnter={() => setHoveredBtn('won')}
+                onMouseLeave={() => setHoveredBtn(null)}
             >
                 {t('endGame.believersWon')}
             </Button>
-            <Button onClick={handleBelieversLost} style={defaultBtnStyle}>
+            <Button
+                onClick={handleBelieversLost}
+                style={
+                    hoveredBtn === 'lost'
+                        ? defaultBtnHoverStyle
+                        : defaultBtnStyle
+                }
+                onMouseEnter={() => setHoveredBtn('lost')}
+                onMouseLeave={() => setHoveredBtn(null)}
+            >
                 {t('endGame.believersLost')}
             </Button>
         </div>
     ) : (
-        <div className="end-game-modal-footer flex justify-end gap-2">
+        <div className="flex justify-end gap-2">
             <Button
                 onClick={() => setStep('question')}
-                style={defaultBtnStyle}
+                style={
+                    hoveredBtn === 'back'
+                        ? defaultBtnHoverStyle
+                        : defaultBtnStyle
+                }
+                onMouseEnter={() => setHoveredBtn('back')}
+                onMouseLeave={() => setHoveredBtn(null)}
             >
                 {t('endGame.back')}
             </Button>
@@ -93,9 +131,13 @@ export function EndGameModal({ open, onClose, onConfirm }: Props) {
                 disabled={selectedGhostId == null}
                 onClick={handleConfirmGhost}
                 style={{
-                    ...primaryBtnStyle,
+                    ...(hoveredBtn === 'confirm' && selectedGhostId != null
+                        ? primaryBtnHoverStyle
+                        : primaryBtnStyle),
                     ...(selectedGhostId == null ? { opacity: 0.5 } : {}),
                 }}
+                onMouseEnter={() => setHoveredBtn('confirm')}
+                onMouseLeave={() => setHoveredBtn(null)}
             >
                 {t('endGame.confirmGhost')}
             </Button>

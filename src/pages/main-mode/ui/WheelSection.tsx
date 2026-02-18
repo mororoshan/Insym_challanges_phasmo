@@ -26,7 +26,7 @@ export function WheelSection({
     const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const availableCount = availableGhosts.length
 
-    const AUTO_CLOSE_MS = 3500
+    const AUTO_CLOSE_MS = 1000
 
     const clearCloseTimeout = useCallback(() => {
         if (closeTimeoutRef.current != null) {
@@ -84,7 +84,8 @@ export function WheelSection({
                     <button
                         type="button"
                         onClick={onEndGame}
-                        className="rounded border border-neutral-400 bg-white px-4 py-2 font-medium transition hover:bg-neutral-50"
+                        disabled={!spunGhosts || spunGhosts.length === 0}
+                        className="rounded border border-neutral-400 bg-white px-4 py-2 font-medium transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-none"
                     >
                         {t('wheel.endGameButton')}
                     </button>
@@ -155,7 +156,7 @@ export function WheelSection({
                         {spunGhosts.map((ghost, index) => (
                             <li
                                 key={`${ghost.id}-${index}`}
-                                className="rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-900 [&:not(:first-child)]:line-through"
+                                className="rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-900 not-first:line-through"
                             >
                                 {t(`ghosts.${ghost.id}`)}
                             </li>
