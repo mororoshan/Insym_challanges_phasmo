@@ -28,7 +28,7 @@ export function EvidenceSection({ selectedEvidence, onToggleEvidence }: Props) {
                     </label>
                 ))}
             </div>
-            <p className="mt-2 text-sm text-neutral-500">{t('evidence.hint')}</p>
+            <p className="mt-2 text-sm text-(--sub-text)">{t('evidence.hint')}</p>
         </section>
     )
 }

@@ -269,7 +269,7 @@ function WheelOfNamesInner<T>(
     if (items.length === 0) {
         return (
             <div
-                className="flex items-center justify-center rounded-full border-2 border-dashed border-neutral-300 bg-neutral-50 text-neutral-500"
+                className="flex items-center justify-center rounded-full border-2 border-dashed border-neutral-600 bg-(--switch-bg) text-(--sub-text)"
                 style={{ width: size, height: size }}
             >
                 <span className="text-sm">No items</span>

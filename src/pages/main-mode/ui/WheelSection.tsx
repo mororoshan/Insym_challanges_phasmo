@@ -85,14 +85,14 @@ export function WheelSection({
                         type="button"
                         onClick={onEndGame}
                         disabled={!spunGhosts || spunGhosts.length === 0}
-                        className="rounded border border-neutral-400 bg-white px-4 py-2 font-medium transition hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-none"
+                        className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-none"
                     >
                         {t('wheel.endGameButton')}
                     </button>
                     <button
                         type="button"
                         onClick={() => setIsHistoryOpen(true)}
-                        className="rounded border border-neutral-400 bg-white px-4 py-2 font-medium transition hover:bg-neutral-50"
+                        className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10"
                     >
                         {t('wheel.historyButton')}
                     </button>

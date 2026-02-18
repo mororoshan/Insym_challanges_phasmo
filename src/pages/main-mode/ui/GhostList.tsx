@@ -24,10 +24,10 @@ export function GhostList({ crossedOutGhostIds, onToggleGhost }: Props) {
                                     onToggleGhost(ghost.id)
                                     ;(e.currentTarget as HTMLButtonElement).blur()
                                 }}
-                                className={`rounded border px-3 py-1.5 text-left transition hover:bg-neutral-100 ${
+                                className={`rounded border px-3 py-1.5 text-left transition hover:bg-white/10 ${
                                     crossedOut
-                                        ? 'border-neutral-300 bg-neutral-100 text-neutral-500 line-through'
-                                        : 'border-neutral-400 bg-white'
+                                        ? 'border-neutral-600 bg-neutral-700/50 text-neutral-500 line-through'
+                                        : 'border-neutral-500 bg-(--button-bg) text-white'
                                 }`}
                             >
                                 {t(`ghosts.${ghost.id}`)}
@@ -36,7 +36,7 @@ export function GhostList({ crossedOutGhostIds, onToggleGhost }: Props) {
                     )
                 })}
             </ul>
-            <p className="mt-2 text-sm text-neutral-500">{t('ghosts.hint')}</p>
+            <p className="mt-2 text-sm text-(--sub-text)">{t('ghosts.hint')}</p>
         </section>
     )
 }
