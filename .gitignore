@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 localhost+1-key.pem
 .env
+.cursor

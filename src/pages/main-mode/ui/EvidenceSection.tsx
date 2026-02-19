@@ -3,7 +3,6 @@ import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { EVIDENCE } from '@/shared/data/phasmophobia'
 import type { EvidenceId } from '@/shared/data/phasmophobia'
-import classNames from 'classnames'
 
 type Props = {
     selectedEvidence: Set<EvidenceId>
