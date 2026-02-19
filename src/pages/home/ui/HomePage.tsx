@@ -9,19 +9,13 @@ export function HomePage() {
     return (
         <main className="py-8 text-white">
             <div className="mb-10 text-center">
-                <h1 className="mb-2 text-3xl font-bold">
-                    {t('title')}
-                </h1>
+                <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
                 <p className="text-lg text-white/90">{t('tagline')}</p>
             </div>
 
             <section className="mb-10">
-                <h2 className="mb-3 text-xl font-semibold">
-                    {t('whatIs')}
-                </h2>
-                <p className="max-w-prose text-white/90">
-                    {t('whatIsBody')}
-                </p>
+                <h2 className="mb-3 text-xl font-semibold">{t('whatIs')}</h2>
+                <p className="max-w-prose text-white/90">{t('whatIsBody')}</p>
             </section>
 
             <section className="mb-10">
@@ -56,9 +50,9 @@ export function HomePage() {
             <div className="flex justify-center">
                 <Link
                     to={ROUTES.MAIN_MODE}
-                    className="rounded-lg bg-amber-500 px-6 py-3 font-medium text-white transition hover:bg-amber-600"
+                    className="rounded-lg bg-amber-200 px-6 py-3 font-medium text-white transition hover:bg-amber-400"
                 >
-                    {t('getStarted')} → {t('mainMode')}
+                    {t('getStarted')}
                 </Link>
             </div>
         </main>

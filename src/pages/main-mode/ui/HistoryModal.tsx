@@ -100,16 +100,9 @@ export const HistoryModal = observer(function HistoryModal({
             onCancel={onClose}
             footer={null}
             width={560}
-            styles={{
-                container: {
-                    background: '#242424',
-                },
-                body: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: 0,
-                    maxHeight: '70vh',
-                },
+            classNames={{
+                container: 'bg-[#242424]',
+                body: 'flex flex-col min-h-0 max-h-[70vh]',
             }}
         >
             {sessions.length === 0 ? (
@@ -146,7 +139,7 @@ export const HistoryModal = observer(function HistoryModal({
                                         {daySessions.map((session) => (
                                             <tr
                                                 key={session.id}
-                                                className="border-b border-neutral-600 hover:bg-amber-50/50"
+                                                className="border-b border-neutral-600 hover:bg-amber-500/15"
                                             >
                                                 <td className="py-2 pr-4 text-sm text-neutral-600 whitespace-nowrap w-0">
                                                     {new Date(
@@ -161,7 +154,8 @@ export const HistoryModal = observer(function HistoryModal({
                                                 </td>
                                                 <td className="py-2 text-sm text-white">
                                                     <div>
-                                                        {session.rolls.length === 0
+                                                        {session.rolls
+                                                            .length === 0
                                                             ? '—'
                                                             : session.rolls
                                                                   .map((r) =>
@@ -177,12 +171,15 @@ export const HistoryModal = observer(function HistoryModal({
                                                             <div className="mt-1 text-xs text-neutral-400">
                                                                 {t(
                                                                     'history.itemsOrder'
-                                                                )}:{' '}
+                                                                )}
+                                                                :{' '}
                                                                 {session.itemRollOrder
                                                                     .map(
                                                                         (id) =>
                                                                             EVIDENCE.some(
-                                                                                (e) =>
+                                                                                (
+                                                                                    e
+                                                                                ) =>
                                                                                     e.id ===
                                                                                     id
                                                                             )
@@ -198,19 +195,29 @@ export const HistoryModal = observer(function HistoryModal({
                                                                     )}
                                                             </div>
                                                         )}
-                                                    {session.believersWon !== undefined && (
+                                                    {session.believersWon !==
+                                                        undefined && (
                                                         <div className="mt-1">
                                                             {session.believersWon ? (
                                                                 <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-emerald-500/20 text-emerald-300">
-                                                                    {t('history.won')}
+                                                                    {t(
+                                                                        'history.won'
+                                                                    )}
                                                                 </span>
                                                             ) : (
                                                                 <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-red-500/20 text-red-300">
                                                                     {session.actualGhostId
-                                                                        ? t('history.lostWithGhost', {
-                                                                              ghost: t(`ghosts.${session.actualGhostId}`),
-                                                                          })
-                                                                        : t('history.lost')}
+                                                                        ? t(
+                                                                              'history.lostWithGhost',
+                                                                              {
+                                                                                  ghost: t(
+                                                                                      `ghosts.${session.actualGhostId}`
+                                                                                  ),
+                                                                              }
+                                                                          )
+                                                                        : t(
+                                                                              'history.lost'
+                                                                          )}
                                                                 </span>
                                                             )}
                                                         </div>
