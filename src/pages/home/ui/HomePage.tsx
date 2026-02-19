@@ -1,15 +1,17 @@
-import { Link } from 'react-router-dom'
-import { ROUTES } from '@/shared/config/routes'
+import { useNavigate } from 'react-router-dom'
 import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
+import { Button } from 'antd'
+import { ROUTES } from '@/shared/config/routes'
 
 export function HomePage() {
     const { t } = useTranslation(ENameSpaces.MAIN_PAGE)
+    const navigate = useNavigate()
 
     return (
         <main className="py-8 text-white">
             <div className="mb-10 text-center">
-                <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+                <h1 className="mb-2 text-3xl font-bold ">{t('title')}</h1>
                 <p className="text-lg text-white/90">{t('tagline')}</p>
             </div>
 
@@ -47,14 +49,13 @@ export function HomePage() {
                 </ul>
             </section>
 
-            <div className="flex justify-center">
-                <Link
-                    to={ROUTES.MAIN_MODE}
-                    className="rounded-lg bg-amber-200 px-6 py-3 font-medium text-white transition hover:bg-amber-400"
-                >
-                    {t('getStarted')}
-                </Link>
-            </div>
+            <Button
+                className="rounded-lg bg-(--button-bg) px-6 py-3 hover:border-white font-medium text-white transition hover:bg-amber-500/80"
+                size="large"
+                onClick={() => navigate(ROUTES.MAIN_MODE)}
+            >
+                {t('getStarted')}
+            </Button>
         </main>
     )
 }

@@ -20,6 +20,41 @@ type RemoveSessionButtonProps = {
     removeConfirm: string
 }
 
+function toDateKey(date: Date): string {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+}
+
+function groupSessionsByDate(
+    sessions: RollSession[]
+): Map<string, RollSession[]> {
+    const map = new Map<string, RollSession[]>()
+    for (const session of sessions) {
+        const key = toDateKey(new Date(session.createdAt))
+        const list = map.get(key) ?? []
+        list.push(session)
+        map.set(key, list)
+    }
+    return map
+}
+
+function formatDateLabel(dateKey: string): string {
+    const [y, m, d] = dateKey.split('-').map(Number)
+    const date = new Date(y, m - 1, d)
+    const now = new Date()
+    const isCurrentYear = y === now.getFullYear()
+    const isCurrentMonth = isCurrentYear && m === now.getMonth() + 1
+
+    return date.toLocaleDateString(undefined, {
+        weekday: 'short',
+        ...(isCurrentMonth ? {} : { month: 'short' }),
+        day: 'numeric',
+        ...(isCurrentYear ? {} : { year: 'numeric' }),
+    })
+}
+
 function RemoveSessionButton({
     onRemove,
     removeLabel,
@@ -40,18 +75,81 @@ function RemoveSessionButton({
     )
 }
 
-function groupSessionsByDate(
-    sessions: RollSession[]
-): Map<string, RollSession[]> {
-    const map = new Map<string, RollSession[]>()
-    for (const session of sessions) {
-        const d = new Date(session.createdAt)
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-        const list = map.get(key) ?? []
-        list.push(session)
-        map.set(key, list)
-    }
-    return map
+type SessionRowProps = {
+    session: RollSession
+    isEditMode: boolean
+    t: (key: string, opts?: { ghost?: string }) => string
+    onRemove: (id: string) => void
+}
+
+function SessionRow({ session, isEditMode, t, onRemove }: SessionRowProps) {
+    const timeStr = new Date(session.createdAt).toLocaleTimeString(undefined, {
+        hour: '2-digit',
+        minute: '2-digit',
+    })
+
+    const rollsDisplay =
+        session.rolls.length === 0
+            ? '—'
+            : session.rolls.map((r) => t(`ghosts.${r.itemId}`)).join(' → ')
+
+    const hasItemOrder =
+        session.itemRollOrder && session.itemRollOrder.length > 0
+    const itemOrderDisplay = hasItemOrder
+        ? session
+              .itemRollOrder!.map((id) =>
+                  EVIDENCE.some((e) => e.id === id)
+                      ? t(`evidence.${id}`)
+                      : t(`sideEvidence.${id}`)
+              )
+              .join(' → ')
+        : null
+
+    const showOutcome = session.believersWon !== undefined
+
+    return (
+        <tr className="border-b border-neutral-600 hover:bg-amber-500/15 first:border-t">
+            <td className="py-2 pr-4 text-sm text-neutral-600 whitespace-nowrap w-0">
+                {timeStr}
+            </td>
+            <td className="py-2 text-sm text-white">
+                <div>{rollsDisplay}</div>
+                {itemOrderDisplay != null && (
+                    <div className="mt-1 text-xs text-neutral-400">
+                        {t('history.itemsOrder')}: {itemOrderDisplay}
+                    </div>
+                )}
+                {showOutcome && (
+                    <div className="mt-1">
+                        {session.believersWon ? (
+                            <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-emerald-500/20 text-emerald-300">
+                                {t('history.won')}
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-red-500/20 text-red-300">
+                                {session.actualGhostId
+                                    ? t('history.lostWithGhost', {
+                                          ghost: t(
+                                              `ghosts.${session.actualGhostId}`
+                                          ),
+                                      })
+                                    : t('history.lost')}
+                            </span>
+                        )}
+                    </div>
+                )}
+            </td>
+            {isEditMode && (
+                <td className="py-2 pl-2 w-0">
+                    <RemoveSessionButton
+                        onRemove={() => onRemove(session.id)}
+                        removeLabel={t('history.remove')}
+                        removeConfirm={t('history.removeConfirm')}
+                    />
+                </td>
+            )}
+        </tr>
+    )
 }
 
 export const HistoryModal = observer(function HistoryModal({
@@ -110,137 +208,27 @@ export const HistoryModal = observer(function HistoryModal({
             ) : (
                 <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
                     {sortedDates.map((dateKey) => {
-                        const [y, m, d] = dateKey.split('-').map(Number)
-                        const now = new Date()
-                        const isCurrentYear = y === now.getFullYear()
-                        const isCurrentMonth =
-                            isCurrentYear && m === now.getMonth() + 1
-                        const dateLabel = new Date(
-                            y,
-                            m - 1,
-                            d
-                        ).toLocaleDateString(undefined, {
-                            weekday: 'short',
-                            ...(isCurrentMonth ? {} : { month: 'short' }),
-                            day: 'numeric',
-                            ...(isCurrentYear ? {} : { year: 'numeric' }),
-                        })
+                        const dateLabel = formatDateLabel(dateKey)
                         const daySessions = byDate.get(dateKey) ?? []
                         return (
                             <section key={dateKey} className="mb-4 last:mb-0">
                                 <Divider
+                                    classNames={{ rail: 'border-transparent' }}
                                     orientation="horizontal"
-                                    className="text-xs! text-neutral-500! mt-4! first:mt-0!"
+                                    className="text-xs text-neutral-400 mt-4 first:mt-0"
                                 >
                                     {dateLabel}
                                 </Divider>
                                 <table className="w-full border-collapse text-left">
                                     <tbody>
                                         {daySessions.map((session) => (
-                                            <tr
+                                            <SessionRow
                                                 key={session.id}
-                                                className="border-b border-neutral-600 hover:bg-amber-500/15"
-                                            >
-                                                <td className="py-2 pr-4 text-sm text-neutral-600 whitespace-nowrap w-0">
-                                                    {new Date(
-                                                        session.createdAt
-                                                    ).toLocaleTimeString(
-                                                        undefined,
-                                                        {
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                        }
-                                                    )}
-                                                </td>
-                                                <td className="py-2 text-sm text-white">
-                                                    <div>
-                                                        {session.rolls
-                                                            .length === 0
-                                                            ? '—'
-                                                            : session.rolls
-                                                                  .map((r) =>
-                                                                      t(
-                                                                          `ghosts.${r.itemId}`
-                                                                      )
-                                                                  )
-                                                                  .join(' → ')}
-                                                    </div>
-                                                    {session.itemRollOrder &&
-                                                        session.itemRollOrder
-                                                            .length > 0 && (
-                                                            <div className="mt-1 text-xs text-neutral-400">
-                                                                {t(
-                                                                    'history.itemsOrder'
-                                                                )}
-                                                                :{' '}
-                                                                {session.itemRollOrder
-                                                                    .map(
-                                                                        (id) =>
-                                                                            EVIDENCE.some(
-                                                                                (
-                                                                                    e
-                                                                                ) =>
-                                                                                    e.id ===
-                                                                                    id
-                                                                            )
-                                                                                ? t(
-                                                                                      `evidence.${id}`
-                                                                                  )
-                                                                                : t(
-                                                                                      `sideEvidence.${id}`
-                                                                                  )
-                                                                    )
-                                                                    .join(
-                                                                        ' → '
-                                                                    )}
-                                                            </div>
-                                                        )}
-                                                    {session.believersWon !==
-                                                        undefined && (
-                                                        <div className="mt-1">
-                                                            {session.believersWon ? (
-                                                                <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-emerald-500/20 text-emerald-300">
-                                                                    {t(
-                                                                        'history.won'
-                                                                    )}
-                                                                </span>
-                                                            ) : (
-                                                                <span className="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-red-500/20 text-red-300">
-                                                                    {session.actualGhostId
-                                                                        ? t(
-                                                                              'history.lostWithGhost',
-                                                                              {
-                                                                                  ghost: t(
-                                                                                      `ghosts.${session.actualGhostId}`
-                                                                                  ),
-                                                                              }
-                                                                          )
-                                                                        : t(
-                                                                              'history.lost'
-                                                                          )}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                {isEditMode && (
-                                                    <td className="py-2 pl-2 w-0">
-                                                        <RemoveSessionButton
-                                                            onRemove={() =>
-                                                                store.deleteSession(
-                                                                    session.id
-                                                                )
-                                                            }
-                                                            removeLabel={t(
-                                                                'history.remove'
-                                                            )}
-                                                            removeConfirm={t(
-                                                                'history.removeConfirm'
-                                                            )}
-                                                        />
-                                                    </td>
-                                                )}
-                                            </tr>
+                                                session={session}
+                                                isEditMode={isEditMode}
+                                                t={t}
+                                                onRemove={store.deleteSession}
+                                            />
                                         ))}
                                     </tbody>
                                 </table>

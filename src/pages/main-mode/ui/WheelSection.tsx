@@ -12,7 +12,6 @@ type Props = {
     onWheelComplete: (ghost: Ghost) => void
     onEndGame: () => void
     spunGhosts: Ghost[] | null
-    /** Initial wheel size in pixels (default 280). Ignored if not provided. */
     wheelSize?: number
 }
 
@@ -87,7 +86,7 @@ export function WheelSection({
                         size="large"
                         onClick={() => showModal()}
                         disabled={availableCount <= 1}
-                        className="rounded bg-amber-600 px-4 py-2 font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded bg-amber-600 px-4 py-2 font-medium text-white transition hover:border-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {t('wheel.spinButton')}
                     </Button>
@@ -95,7 +94,7 @@ export function WheelSection({
                         size="large"
                         onClick={onEndGame}
                         disabled={!spunGhosts || spunGhosts.length === 0}
-                        className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-none"
+                        className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition  not:disabled:hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {t('wheel.endGameButton')}
                     </Button>

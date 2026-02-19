@@ -12,11 +12,7 @@ type Props = {
     onClose?: () => void
 }
 
-export function ChallengeWheelModal({
-    open,
-    onPresetChosen,
-    onClose,
-}: Props) {
+export function ChallengeWheelModal({ open, onPresetChosen, onClose }: Props) {
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
     const wheelRef = useRef<WheelOfNamesHandle>(null)
 
@@ -44,18 +40,15 @@ export function ChallengeWheelModal({
             centered
             closable={!!onClose}
             onCancel={onClose ? handleCancel : undefined}
-            styles={{
-                container: {
-                    boxShadow: 'none',
-                    backgroundColor: 'transparent',
-                },
+            classNames={{
+                container: 'shadow-none bg-transparent',
             }}
             open={open}
             afterOpenChange={(isOpen) => {
                 if (isOpen) wheelRef.current?.spin()
             }}
             footer={null}
-            title={t('challengeWheel.title')}
+            title={null}
         >
             <div className="flex justify-center py-4">
                 <WheelOfNames<Preset>
