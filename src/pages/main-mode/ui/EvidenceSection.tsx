@@ -3,6 +3,7 @@ import { ENameSpaces } from '@/shared/config/i18next/models/i18n.namespaces'
 import { useTranslation } from 'react-i18next'
 import { EVIDENCE } from '@/shared/data/phasmophobia'
 import type { EvidenceId } from '@/shared/data/phasmophobia'
+import classNames from 'classnames'
 
 type Props = {
     selectedEvidence: Set<EvidenceId>
@@ -11,9 +12,12 @@ type Props = {
 
 export function EvidenceSection({ selectedEvidence, onToggleEvidence }: Props) {
     const { t } = useTranslation(ENameSpaces.MAIN_MODE)
+
     return (
         <section className="mb-6">
-            <h2 className="mb-3 text-lg font-semibold">{t('evidence.title')}</h2>
+            <h2 className="mb-3 text-lg font-semibold">
+                {t('evidence.title')}
+            </h2>
             <div className="flex flex-wrap gap-4">
                 {EVIDENCE.map((ev) => (
                     <label
@@ -21,6 +25,11 @@ export function EvidenceSection({ selectedEvidence, onToggleEvidence }: Props) {
                         className="flex cursor-pointer items-center gap-2"
                     >
                         <Switch
+                            classNames={{
+                                root: selectedEvidence.has(ev.id)
+                                    ? 'bg-amber-500'
+                                    : '',
+                            }}
                             checked={selectedEvidence.has(ev.id)}
                             onChange={() => onToggleEvidence(ev.id)}
                         />
@@ -28,7 +37,9 @@ export function EvidenceSection({ selectedEvidence, onToggleEvidence }: Props) {
                     </label>
                 ))}
             </div>
-            <p className="mt-2 text-sm text-(--sub-text)">{t('evidence.hint')}</p>
+            <p className="mt-2 text-sm text-(--sub-text)">
+                {t('evidence.hint')}
+            </p>
         </section>
     )
 }

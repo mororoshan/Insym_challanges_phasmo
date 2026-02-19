@@ -5,6 +5,7 @@ import { WheelOfNames, type WheelOfNamesHandle } from '@/widgets/WheelOfNames'
 import type { Ghost } from '@/shared/data/phasmophobia'
 import { AppModal } from '@/shared/ui/AppModal'
 import { HistoryModal } from './HistoryModal'
+import { Button } from 'antd'
 
 type Props = {
     availableGhosts: Ghost[]
@@ -67,35 +68,44 @@ export function WheelSection({
         [onWheelComplete, clearCloseTimeout]
     )
 
+    const handleSpinOnOpened = (opened: boolean) => {
+        if (!opened) {
+            clearCloseTimeout()
+            return
+        }
+
+        wheelRef.current?.spin()
+    }
+
     useEffect(() => () => clearCloseTimeout(), [clearCloseTimeout])
 
     return (
         <>
             <section className="mb-6">
                 <div className="mb-3 flex flex-wrap items-center gap-4">
-                    <button
-                        type="button"
+                    <Button
+                        size="large"
                         onClick={() => showModal()}
                         disabled={availableCount <= 1}
-                        className="rounded bg-amber-500 px-4 py-2 font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded bg-amber-600 px-4 py-2 font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {t('wheel.spinButton')}
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
+                        size="large"
                         onClick={onEndGame}
                         disabled={!spunGhosts || spunGhosts.length === 0}
                         className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-none"
                     >
                         {t('wheel.endGameButton')}
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
+                        size="large"
                         onClick={() => setIsHistoryOpen(true)}
                         className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10"
                     >
                         {t('wheel.historyButton')}
-                    </button>
+                    </Button>
                     {availableCount > 0 && (
                         <span className="text-sm text-neutral-500">
                             {t('wheel.count', { count: availableCount })}
@@ -106,22 +116,13 @@ export function WheelSection({
                 <AppModal
                     centered
                     closable={false}
-                    styles={{
-                        container: {
-                            boxShadow: 'none',
-                            backgroundColor: 'transparent',
-                        },
+                    classNames={{
+                        container: 'shadow-none bg-transparent',
                     }}
                     open={isModalOpen}
                     onOk={handleOk}
                     onCancel={handleCancel}
-                    afterOpenChange={(isOpen) => {
-                        if (isOpen) {
-                            wheelRef.current?.spin()
-                        } else {
-                            clearCloseTimeout()
-                        }
-                    }}
+                    afterOpenChange={handleSpinOnOpened}
                     footer={null}
                 >
                     <div className="flex justify-center py-4">

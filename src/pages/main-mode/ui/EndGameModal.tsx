@@ -154,20 +154,10 @@ export function EndGameModal({ open, onClose, onConfirm }: Props) {
             onCancel={handleClose}
             footer={footer}
             width={560}
-            styles={{
-                container: {
-                    background: '#242424',
-                },
-                body: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: 0,
-                    maxHeight: '70vh',
-                },
-                footer: {
-                    borderTop: '1px solid #525252',
-                    background: '#242424',
-                },
+            classNames={{
+                container: 'bg-[#242424]',
+                body: 'flex flex-col min-h-0 max-h-[70vh]',
+                footer: 'bg-[#242424]',
             }}
         >
             {isQuestionStep ? (

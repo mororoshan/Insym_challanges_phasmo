@@ -1,4 +1,15 @@
+@layer theme, base, antd, components, utilities;
+
 @import 'tailwindcss';
+
+/* Both reset.css and antd.css must specify a layer */
+@layer reset, antd;
+
+/* reset styles */
+/* @import url(reset.css) layer(reset); */
+
+/* antd styles */
+/* @import url(antd.css) layer(antd); */
 
 :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -50,35 +61,4 @@ body {
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
-}
-
-button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: var(--button-bg);
-    color: var(--text);
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
-button:hover {
-    border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-}
-
-/* Ant Design Switch: track and handle */
-.ant-switch {
-    background: var(--switch-bg) !important;
-}
-.ant-switch.ant-switch-checked {
-    background: rgba(100, 108, 255, 0.8) !important;
-}
-.ant-switch .ant-switch-handle::before {
-    background: var(--switch-button) !important;
 }
