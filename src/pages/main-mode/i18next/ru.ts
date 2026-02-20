@@ -87,6 +87,11 @@ const ru = {
         resultTitle: 'Выпало',
         sizeLabel: 'Размер колеса',
         historyButton: 'История бросков',
+        contextMenu: 'Настройки колеса',
+        ghostsPerRoll: 'Призраков за один запуск',
+        ghostsPerRollCount: '{{count}}',
+        crossOutSpunInList: 'Зачёркивать предыдущих призраков в списке',
+        spinDuration: 'Длительность вращения (сек)',
     },
     endGame: {
         title: 'Завершить игру',

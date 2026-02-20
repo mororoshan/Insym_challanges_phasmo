@@ -5,7 +5,8 @@ import { WheelOfNames, type WheelOfNamesHandle } from '@/widgets/WheelOfNames'
 import type { Ghost } from '@/shared/data/phasmophobia'
 import { AppModal } from '@/shared/ui/AppModal'
 import { HistoryModal } from './HistoryModal'
-import { Button } from 'antd'
+import { WheelOptionsMenu, GHOSTS_PER_ROLL_MIN } from './WheelOptionsMenu'
+import { Button, Dropdown } from 'antd'
 
 type Props = {
     availableGhosts: Ghost[]
@@ -24,9 +25,14 @@ export function WheelSection({
     const { t, i18n } = useTranslation(ENameSpaces.MAIN_MODE)
     const wheelRef = useRef<WheelOfNamesHandle>(null)
     const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const spinsRemainingRef = useRef(0)
     const availableCount = availableGhosts.length
 
     const AUTO_CLOSE_MS = 1000
+
+    const [ghostsPerRoll, setGhostsPerRoll] = useState(GHOSTS_PER_ROLL_MIN)
+    const [durationMs, setDurationMs] = useState(4000)
+    const [spunGhostsCrossedOut, setSpunGhostsCrossedOut] = useState(true)
 
     const clearCloseTimeout = useCallback(() => {
         if (closeTimeoutRef.current != null) {
@@ -41,6 +47,7 @@ export function WheelSection({
 
     const showModal = () => {
         setWheelItemsSnapshot([...availableGhosts])
+        spinsRemainingRef.current = ghostsPerRoll
         setIsModalOpen(true)
     }
 
@@ -55,16 +62,34 @@ export function WheelSection({
         setIsModalOpen(false)
     }
 
+    const scheduleClose = useCallback(() => {
+        clearCloseTimeout()
+        closeTimeoutRef.current = setTimeout(() => {
+            closeTimeoutRef.current = null
+            setIsModalOpen(false)
+        }, AUTO_CLOSE_MS)
+    }, [clearCloseTimeout])
+
     const handleWheelComplete = useCallback(
         (ghost: Ghost) => {
             onWheelComplete(ghost)
-            clearCloseTimeout()
-            closeTimeoutRef.current = setTimeout(() => {
-                closeTimeoutRef.current = null
-                setIsModalOpen(false)
-            }, AUTO_CLOSE_MS)
+            spinsRemainingRef.current -= 1
+            const spinsLeft = spinsRemainingRef.current
+            if (spinsLeft > 0) {
+                setWheelItemsSnapshot((prev) => {
+                    const next = prev.filter((g) => g.id !== ghost.id)
+                    if (next.length > 0) {
+                        setTimeout(() => wheelRef.current?.spin(), 150)
+                        return next
+                    }
+                    scheduleClose()
+                    return prev
+                })
+            } else {
+                scheduleClose()
+            }
         },
-        [onWheelComplete, clearCloseTimeout]
+        [onWheelComplete, scheduleClose]
     )
 
     const handleSpinOnOpened = (opened: boolean) => {
@@ -72,7 +97,7 @@ export function WheelSection({
             clearCloseTimeout()
             return
         }
-
+        spinsRemainingRef.current = ghostsPerRoll
         wheelRef.current?.spin()
     }
 
@@ -80,90 +105,103 @@ export function WheelSection({
 
     return (
         <>
-            <section className="mb-6">
-                <div className="mb-3 flex flex-wrap items-center gap-4">
-                    <Button
-                        size="large"
-                        onClick={() => showModal()}
-                        disabled={availableCount <= 1}
-                        className="rounded bg-amber-600 px-4 py-2 font-medium text-white transition hover:border-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {t('wheel.spinButton')}
-                    </Button>
-                    <Button
-                        size="large"
-                        onClick={onEndGame}
-                        disabled={!spunGhosts || spunGhosts.length === 0}
-                        className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition  not:disabled:hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {t('wheel.endGameButton')}
-                    </Button>
-                    <Button
-                        size="large"
-                        onClick={() => setIsHistoryOpen(true)}
-                        className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10"
-                    >
-                        {t('wheel.historyButton')}
-                    </Button>
-                    {availableCount > 0 && (
-                        <span className="text-sm text-neutral-500">
-                            {t('wheel.count', { count: availableCount })}
-                        </span>
-                    )}
-                </div>
-
-                <AppModal
-                    centered
-                    closable={false}
-                    classNames={{
-                        container: 'shadow-none bg-transparent',
-                    }}
-                    open={isModalOpen}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
-                    afterOpenChange={handleSpinOnOpened}
-                    footer={null}
-                >
-                    <div className="flex justify-center py-4">
-                        <WheelOfNames<Ghost>
-                            ref={wheelRef}
-                            items={wheelItemsSnapshot}
-                            getLabel={(g) => t(`ghosts.${g.id}`)}
-                            onSpinComplete={handleWheelComplete}
-                            disabled={wheelItemsSnapshot.length === 0}
-                            durationMs={4000}
-                            fullRotations={6}
-                            size={800}
-                        />
+            <Dropdown
+                popupRender={() => (
+                    <WheelOptionsMenu
+                        ghostsPerRoll={ghostsPerRoll}
+                        durationMs={durationMs}
+                        spunGhostsCrossedOut={spunGhostsCrossedOut}
+                        onGhostsPerRollChange={setGhostsPerRoll}
+                        onDurationMsChange={setDurationMs}
+                        onSpunGhostsCrossedOutChange={setSpunGhostsCrossedOut}
+                    />
+                )}
+                trigger={['contextMenu']}
+            >
+                <section className="mb-6">
+                    <div className="mb-3 flex flex-wrap items-center gap-4">
+                        <Button
+                            size="large"
+                            onClick={() => showModal()}
+                            disabled={availableCount <= 1}
+                            className="rounded bg-amber-600 px-4 py-2 font-medium text-white transition hover:border-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {t('wheel.spinButton')}
+                        </Button>
+                        <Button
+                            size="large"
+                            onClick={onEndGame}
+                            disabled={!spunGhosts || spunGhosts.length === 0}
+                            className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition  not:disabled:hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {t('wheel.endGameButton')}
+                        </Button>
+                        <Button
+                            size="large"
+                            onClick={() => setIsHistoryOpen(true)}
+                            className="rounded border border-neutral-500 bg-(--button-bg) px-4 py-2 font-medium text-white transition hover:bg-white/10"
+                        >
+                            {t('wheel.historyButton')}
+                        </Button>
+                        {availableCount > 0 && (
+                            <span className="text-sm text-neutral-500">
+                                {t('wheel.count', { count: availableCount })}
+                            </span>
+                        )}
                     </div>
-                </AppModal>
 
-                <HistoryModal
-                    open={isHistoryOpen}
-                    onClose={() => setIsHistoryOpen(false)}
-                />
-            </section>
+                    <AppModal
+                        centered
+                        closable={false}
+                        classNames={{
+                            container: 'shadow-none bg-transparent',
+                        }}
+                        open={isModalOpen}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                        afterOpenChange={handleSpinOnOpened}
+                        footer={null}
+                    >
+                        <div className="flex justify-center py-4">
+                            <WheelOfNames<Ghost>
+                                ref={wheelRef}
+                                items={wheelItemsSnapshot}
+                                getLabel={(g) => t(`ghosts.${g.id}`)}
+                                onSpinComplete={handleWheelComplete}
+                                disabled={wheelItemsSnapshot.length === 0}
+                                durationMs={durationMs}
+                                fullRotations={6}
+                                size={800}
+                            />
+                        </div>
+                    </AppModal>
 
-            {spunGhosts && spunGhosts.length > 0 && (
-                <section
-                    key={`result-${i18n.language}`}
-                    className="rounded-lg border border-amber-200 bg-amber-50/50 p-3"
-                >
-                    <h3 className="mb-2 text-sm font-medium text-amber-900">
-                        {t('wheel.resultTitle')}
-                    </h3>
-                    <ul className="flex flex-wrap gap-2">
-                        {spunGhosts.map((ghost, index) => (
-                            <li
-                                key={`${ghost.id}-${index}`}
-                                className="rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-900 not-first:line-through"
-                            >
-                                {t(`ghosts.${ghost.id}`)}
-                            </li>
-                        ))}
-                    </ul>
+                    <HistoryModal
+                        open={isHistoryOpen}
+                        onClose={() => setIsHistoryOpen(false)}
+                    />
+                    {spunGhosts && spunGhosts.length > 0 && (
+                        <section
+                            key={`result-${i18n.language}`}
+                            className="rounded-lg border border-amber-200 bg-amber-50/50 p-3"
+                        >
+                            <h3 className="mb-2 text-sm font-medium text-amber-900">
+                                {t('wheel.resultTitle')}
+                            </h3>
+                            <ul className="flex flex-wrap gap-2">
+                                {spunGhosts.map((ghost, index) => (
+                                    <li
+                                        key={`${ghost.id}-${index}`}
+                                        className={`rounded bg-amber-100 px-2 py-1 text-sm font-medium text-amber-900 ${spunGhostsCrossedOut && index > 0 ? 'line-through' : ''}`}
+                                    >
+                                        {t(`ghosts.${ghost.id}`)}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
                 </section>
-            )}
+            </Dropdown>
         </>
     )
 }

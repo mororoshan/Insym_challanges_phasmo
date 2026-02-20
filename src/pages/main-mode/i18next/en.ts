@@ -86,6 +86,11 @@ const en = {
         resultTitle: 'The wheel says',
         sizeLabel: 'Wheel size',
         historyButton: 'History of rolls',
+        contextMenu: 'Wheel options',
+        ghostsPerRoll: 'Ghosts per roll',
+        ghostsPerRollCount: '{{count}}',
+        crossOutSpunInList: 'Cross out previous ghosts in list',
+        spinDuration: 'Spin duration (sec)',
     },
     endGame: {
         title: 'End game',

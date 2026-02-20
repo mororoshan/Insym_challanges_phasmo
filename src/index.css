@@ -13,6 +13,12 @@
     --color-avocado-777: oklch(0.53 0.12 118.34);
     --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
     --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+    --color-main-bg: #242424;
+    --color-button-bg: #1a1a1a;
+    --color-text: #ffffff;
+    --color-sub-text: #a3a3a3;
+    --color-switch-bg: #141414;
+    --color-switch-button: #ffffff;
     /* ... */
 }
 
