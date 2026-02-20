@@ -4,7 +4,7 @@ import { Slider, Switch } from 'antd'
 
 export const GHOSTS_PER_ROLL_MIN = 1
 export const GHOSTS_PER_ROLL_MAX = 8
-export const DURATION_MS_MIN = 2000
+export const DURATION_MS_MIN = 1000
 export const DURATION_MS_MAX = 8000
 export const DURATION_MS_STEP = 500
 

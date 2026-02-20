@@ -1,5 +1,5 @@
 const ru = {
-    title: 'Режим игры',
+    title: 'Рулетка',
     challengeWheel: {
         title: 'Выберите челлендж',
         presetBadgeTitle: 'Активный пресет челленджа',

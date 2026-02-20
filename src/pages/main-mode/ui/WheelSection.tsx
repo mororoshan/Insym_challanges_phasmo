@@ -31,7 +31,7 @@ export function WheelSection({
     const AUTO_CLOSE_MS = 1000
 
     const [ghostsPerRoll, setGhostsPerRoll] = useState(GHOSTS_PER_ROLL_MIN)
-    const [durationMs, setDurationMs] = useState(4000)
+    const [durationMs, setDurationMs] = useState(2000)
     const [spunGhostsCrossedOut, setSpunGhostsCrossedOut] = useState(true)
 
     const clearCloseTimeout = useCallback(() => {
@@ -123,8 +123,8 @@ export function WheelSection({
                         <Button
                             size="large"
                             onClick={() => showModal()}
-                            disabled={availableCount <= 1}
-                            className="rounded bg-amber-600 px-4 py-2 font-medium text-white transition hover:border-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            disabled={availableCount == 0}
+                            className="rounded bg-amber-500 px-4 py-2 font-medium text-shadow-button-bg hover:text-button-bg transition hover:border-white hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {t('wheel.spinButton')}
                         </Button>

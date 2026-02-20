@@ -16,7 +16,7 @@ const en = {
     step3Body:
         'When you finish, tap Next game and record whether you won or lost. History keeps your past runs.',
     getStarted: 'Get started',
-    mainMode: 'Main mode',
+    mainMode: 'The Wheel',
 }
 
 export default en

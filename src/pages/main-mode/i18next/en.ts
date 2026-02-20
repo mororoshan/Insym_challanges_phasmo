@@ -1,5 +1,5 @@
 const en = {
-    title: 'Main mode',
+    title: 'The Wheel',
     challengeWheel: {
         title: 'Pick a challenge',
         presetBadgeTitle: 'Active challenge preset',

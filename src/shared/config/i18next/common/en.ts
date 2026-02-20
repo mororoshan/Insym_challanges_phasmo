@@ -3,7 +3,7 @@ const en = {
     decline: 'Decline',
     nav: {
         home: 'Home',
-        mainMode: 'Main mode',
+        mainMode: 'The Wheel',
         settings: 'Settings',
     },
 }
