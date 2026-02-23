@@ -21,10 +21,10 @@ const NO_TRUCK_LOCKED = [
 
 export const PRESET_IDS = {
     CLASSIC: 'classic',
-    APOCALYPSE_LITE: 'apocalypse-lite',
+    APOCALYPSE_LITE: 'apocalypse',
     WHEEL_ONLY: 'wheel-only',
-    ONE_EVIDENCE_MAX: 'one-evidence-max',
-    NO_TRUCK: 'no-truck',
+    ZERO_EVIDENCE: 'zero-evidence',
+    ZERO_SANITY: 'zero-sanity',
     STREAMER_TORTURE: 'streamer-torture',
     CHAT_DECIDES: 'chat-decides',
 } as const
@@ -40,8 +40,8 @@ export const PRESETS: Preset[] = [
     },
     {
         id: PRESET_IDS.APOCALYPSE_LITE,
-        name: 'Apocalypse-Lite',
-        wheels: { ghostWheel: true, itemWheel: true },
+        name: 'Apocalypse',
+        wheels: { ghostWheel: true, itemWheel: false },
     },
     {
         id: PRESET_IDS.WHEEL_ONLY,
@@ -49,26 +49,16 @@ export const PRESETS: Preset[] = [
         wheels: { ghostWheel: true, itemWheel: false },
     },
     {
-        id: PRESET_IDS.ONE_EVIDENCE_MAX,
-        name: 'One Evidence Max',
-        wheels: { ghostWheel: true, itemWheel: true },
+        id: PRESET_IDS.ZERO_EVIDENCE,
+        name: 'Zero evidence',
+        wheels: { ghostWheel: true, itemWheel: false },
         lockedItems: [...ONE_EVIDENCE_MAX_LOCKED],
     },
     {
-        id: PRESET_IDS.NO_TRUCK,
-        name: 'No Truck',
+        id: PRESET_IDS.ZERO_SANITY,
+        name: 'No sanity',
         wheels: { ghostWheel: true, itemWheel: true },
         lockedItems: [...NO_TRUCK_LOCKED],
-    },
-    {
-        id: PRESET_IDS.STREAMER_TORTURE,
-        name: 'Streamer Torture',
-        wheels: { ghostWheel: true, itemWheel: true },
-    },
-    {
-        id: PRESET_IDS.CHAT_DECIDES,
-        name: 'Chat Decides Everything',
-        wheels: { ghostWheel: true, itemWheel: true },
     },
 ]
 
