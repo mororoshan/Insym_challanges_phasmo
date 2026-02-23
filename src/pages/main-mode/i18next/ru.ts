@@ -7,11 +7,11 @@ const ru = {
     presets: {
         classic: 'Классика',
         custom: 'Свой',
-        'apocalypse-lite': 'Апокалипсис-лайт',
+        apocalypse: 'Апокалипсис',
         'wheel-only': 'Только колесо',
         'one-evidence-max': 'Макс одна улика',
-        'no-truck': 'Без фургона',
-        'streamer-torture': 'Мучения стримера',
+        'zero-evidence': 'Без улик',
+        'zero-sanity': 'Нулевой рассудок',
         'chat-decides': 'Всё решает чат',
     },
     evidence: {

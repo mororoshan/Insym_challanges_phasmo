@@ -34,7 +34,7 @@ export enum GhostId {
     Twins = 'twins',
     Raiju = 'raiju',
     Obake = 'obake',
-    Mimic = 'mimic',
+    // Mimic = 'mimic',
     Moroi = 'moroi',
     Deogen = 'deogen',
     Thaye = 'thaye',
@@ -255,16 +255,16 @@ export const GHOSTS: Ghost[] = [
             EvidenceId.Emf5,
         ],
     },
-    {
-        id: GhostId.Mimic,
-        name: 'The Mimic',
-        evidence: [
-            EvidenceId.SpiritBox,
-            EvidenceId.Ultraviolet,
-            EvidenceId.Freezing,
-            EvidenceId.GhostOrb,
-        ],
-    },
+    // {
+    //     id: GhostId.Mimic,
+    //     name: 'The Mimic',
+    //     evidence: [
+    //         EvidenceId.SpiritBox,
+    //         EvidenceId.Ultraviolet,
+    //         EvidenceId.Freezing,
+    //         EvidenceId.GhostOrb,
+    //     ],
+    // },
     {
         id: GhostId.Moroi,
         name: 'Moroi',

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
     ALL_WHEEL_ITEMS,
     GHOSTS,
@@ -12,6 +12,59 @@ import type { CustomGameFeatures } from '@/shared/types/gameMode'
 import type { Roll } from '@/shared/types/session'
 import { useSessionsStore, useGameModeSettings } from '@/app/store'
 import { MODE_IDS } from '@/shared/types/session'
+
+const MAIN_MODE_STORAGE_KEY_PREFIX = 'kpb_main_mode_state_'
+
+type MainModePersistedState = {
+    selectedEvidence: string[]
+    manualCrossOut: string[]
+}
+
+function getMainModeStateKey(sessionId: string): string {
+    return `${MAIN_MODE_STORAGE_KEY_PREFIX}${sessionId}`
+}
+
+function loadMainModeState(sessionId: string): MainModePersistedState | null {
+    if (typeof localStorage === 'undefined') return null
+    try {
+        const raw = localStorage.getItem(getMainModeStateKey(sessionId))
+        if (!raw) return null
+        const parsed = JSON.parse(raw) as MainModePersistedState
+        if (!Array.isArray(parsed?.selectedEvidence) || !Array.isArray(parsed?.manualCrossOut))
+            return null
+        return parsed
+    } catch {
+        return null
+    }
+}
+
+function saveMainModeState(
+    sessionId: string,
+    selectedEvidence: Set<EvidenceId>,
+    manualCrossOut: Set<GhostId>
+) {
+    if (typeof localStorage === 'undefined') return
+    try {
+        localStorage.setItem(
+            getMainModeStateKey(sessionId),
+            JSON.stringify({
+                selectedEvidence: [...selectedEvidence],
+                manualCrossOut: [...manualCrossOut],
+            } as MainModePersistedState)
+        )
+    } catch {
+        // ignore
+    }
+}
+
+function clearMainModeState(sessionId: string) {
+    if (typeof localStorage === 'undefined') return
+    try {
+        localStorage.removeItem(getMainModeStateKey(sessionId))
+    } catch {
+        // ignore
+    }
+}
 
 function presetFromCustomFeatures(features: CustomGameFeatures): Preset {
     return {
@@ -58,8 +111,35 @@ export function useMainModeState() {
     )
     const [itemsInWheel, setItemsInWheel] = useState<string[]>(() => [])
     const [availableForUse, setAvailableForUse] = useState<string[]>([])
+    const loadedSessionIdRef = useRef<string | null>(null)
 
     const session = sessionsStore.currentSession
+
+    // Load persisted state when entering a main-mode session (e.g. after refresh)
+    useEffect(() => {
+        if (session?.modeId !== MODE_IDS.MAIN || !session.id) {
+            if (!session?.id) loadedSessionIdRef.current = null
+            return
+        }
+        if (loadedSessionIdRef.current === session.id) return
+        loadedSessionIdRef.current = session.id
+        const saved = loadMainModeState(session.id)
+        if (saved) {
+            setSelectedEvidence(
+                new Set(saved.selectedEvidence as EvidenceId[])
+            )
+            setManualCrossOut(new Set(saved.manualCrossOut as GhostId[]))
+        } else {
+            setSelectedEvidence(new Set())
+            setManualCrossOut(new Set())
+        }
+    }, [session?.id, session?.modeId])
+
+    // Persist state whenever evidence or ghost cross-outs change
+    useEffect(() => {
+        if (session?.modeId !== MODE_IDS.MAIN || !session.id) return
+        saveMainModeState(session.id, selectedEvidence, manualCrossOut)
+    }, [session?.id, session?.modeId, selectedEvidence, manualCrossOut])
 
     const activePreset = useMemo<Preset>(() => {
         if (session?.presetId) {
@@ -144,6 +224,7 @@ export function useMainModeState() {
 
     const endGameWithResult = useCallback(
         async (believersWon: boolean, actualGhostId?: GhostId) => {
+            const sessionId = sessionsStore.currentSession?.id
             try {
                 await sessionsStore.endCurrentSession({
                     ...(availableForUse.length > 0 && {
@@ -153,6 +234,8 @@ export function useMainModeState() {
                     ...(actualGhostId != null && { actualGhostId }),
                 })
             } finally {
+                if (sessionId) clearMainModeState(sessionId)
+                loadedSessionIdRef.current = null
                 setSelectedEvidence(new Set())
                 setManualCrossOut(new Set())
                 setItemsInWheel([])

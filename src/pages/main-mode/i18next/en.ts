@@ -7,10 +7,10 @@ const en = {
     presets: {
         classic: 'Classic',
         custom: 'Custom',
-        'apocalypse-lite': 'Apocalypse-Lite',
+        apocalypse: 'Apocalypse',
         'wheel-only': 'Wheel Only',
-        'one-evidence-max': 'One Evidence Max',
-        'no-truck': 'No Truck',
+        'zero-evidence': 'Zero Evidence',
+        'zero-sanity': 'Zero Sanity',
         'streamer-torture': 'Streamer Torture',
         'chat-decides': 'Chat Decides Everything',
     },

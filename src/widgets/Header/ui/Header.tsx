@@ -9,7 +9,10 @@ export function Header() {
         <div className="w-full">
             <nav className="flex items-center gap-4 px-4 py-3">
                 <div className="flex flex-1 gap-4">
-                    <Link to={ROUTES.HOME} className="text-inherit hover:underline">
+                    <Link
+                        to={ROUTES.HOME}
+                        className="text-inherit hover:underline"
+                    >
                         {t('nav.home')}
                     </Link>
                     <Link

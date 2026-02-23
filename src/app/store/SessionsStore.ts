@@ -3,9 +3,39 @@ import type { Roll, RollSession } from '@/shared/types/session'
 import { sessionsDb } from '@/shared/lib/indexed-db/sessionsDb'
 
 const CURRENT_SESSION_STORAGE_KEY = 'insum_current_session_id'
+const DRAFT_SESSION_STORAGE_KEY = 'insum_draft_session'
 
 function generateId(): string {
     return crypto.randomUUID()
+}
+
+function saveDraftSession(session: RollSession) {
+    if (typeof localStorage === 'undefined') return
+    try {
+        localStorage.setItem(DRAFT_SESSION_STORAGE_KEY, JSON.stringify(session))
+    } catch {
+        // ignore
+    }
+}
+
+function clearDraftSession() {
+    if (typeof localStorage === 'undefined') return
+    try {
+        localStorage.removeItem(DRAFT_SESSION_STORAGE_KEY)
+    } catch {
+        // ignore
+    }
+}
+
+function loadDraftSession(): RollSession | null {
+    if (typeof localStorage === 'undefined') return null
+    try {
+        const raw = localStorage.getItem(DRAFT_SESSION_STORAGE_KEY)
+        if (!raw) return null
+        return JSON.parse(raw) as RollSession
+    } catch {
+        return null
+    }
 }
 
 export class SessionsStore {
@@ -30,10 +60,17 @@ export class SessionsStore {
                     : null
             runInAction(() => {
                 this.sessions = list
-                this.currentSession =
-                    (savedCurrentId &&
-                        list.find((s) => s.id === savedCurrentId)) ||
-                    null
+                const fromList =
+                    savedCurrentId && list.find((s) => s.id === savedCurrentId)
+                if (fromList) {
+                    this.currentSession = fromList
+                } else if (savedCurrentId) {
+                    const draft = loadDraftSession()
+                    this.currentSession =
+                        draft?.id === savedCurrentId ? draft : null
+                } else {
+                    this.currentSession = null
+                }
                 this.isHydrated = true
             })
         } finally {
@@ -59,6 +96,7 @@ export class SessionsStore {
         this.sessions = [updated, ...this.sessions.filter((s) => s.id !== updated.id)]
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(CURRENT_SESSION_STORAGE_KEY, updated.id)
+            clearDraftSession()
         }
         await sessionsDb.put(updated)
     }
@@ -83,6 +121,7 @@ export class SessionsStore {
         })
         if (typeof localStorage !== 'undefined') {
             localStorage.setItem(CURRENT_SESSION_STORAGE_KEY, session.id)
+            saveDraftSession(session)
         }
         return session
     }
@@ -118,6 +157,7 @@ export class SessionsStore {
             this.currentSession = null
             if (typeof localStorage !== 'undefined') {
                 localStorage.removeItem(CURRENT_SESSION_STORAGE_KEY)
+                clearDraftSession()
             }
         }
     }
