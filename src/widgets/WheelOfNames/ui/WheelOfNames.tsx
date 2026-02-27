@@ -16,6 +16,7 @@ type Props<T> = {
     getLabel: (item: T) => string
     onSpinComplete: (item: T) => void
     disabled?: boolean
+    clickable?: boolean
     size?: number
     durationMs?: number
     fullRotations?: number
@@ -45,7 +46,7 @@ function easeOutCubic(t: number): number {
 /** Segment index under the pointer at 0° (right side), given wheel rotation in degrees and segment count. */
 function segmentUnderPointer(rotationDeg: number, n: number): number {
     const segmentAngleDeg = 360 / n
-    const normalized = ((90 - rotationDeg) % 360 + 360) % 360
+    const normalized = (((90 - rotationDeg) % 360) + 360) % 360
     return Math.floor(normalized / segmentAngleDeg) % n
 }
 
@@ -54,7 +55,8 @@ let tickAudioContext: AudioContext | null = null
 function playTickSound() {
     try {
         if (!tickAudioContext) tickAudioContext = new AudioContext()
-        if (tickAudioContext.state === 'suspended') void tickAudioContext.resume()
+        if (tickAudioContext.state === 'suspended')
+            void tickAudioContext.resume()
         const ctx = tickAudioContext
         const osc = ctx.createOscillator()
         const gain = ctx.createGain()
@@ -62,7 +64,7 @@ function playTickSound() {
         gain.connect(ctx.destination)
         osc.frequency.value = 720
         osc.type = 'sine'
-        gain.gain.setValueAtTime(0.12, ctx.currentTime)
+        gain.gain.setValueAtTime(0.05, ctx.currentTime)
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03)
         osc.start(ctx.currentTime)
         osc.stop(ctx.currentTime + 0.03)
@@ -147,6 +149,7 @@ function WheelOfNamesInner<T>(
         getLabel,
         onSpinComplete,
         disabled = false,
+        clickable = false,
         size = DEFAULT_SIZE,
         durationMs = DEFAULT_DURATION_MS,
         fullRotations = DEFAULT_FULL_ROTATIONS,
@@ -288,7 +291,15 @@ function WheelOfNamesInner<T>(
             <canvas
                 ref={canvasRef}
                 className="rounded-full shadow-lg"
-                style={{ display: 'block', marginTop: canvasTop }}
+                style={{
+                    display: 'block',
+                    marginTop: canvasTop,
+                    cursor:
+                        clickable && !disabled && items.length > 0
+                            ? 'pointer'
+                            : 'default',
+                }}
+                onClick={clickable ? spin : undefined}
             />
             {/* Pointer at right (3 o'clock) so the winning label lands horizontal and readable */}
             <div

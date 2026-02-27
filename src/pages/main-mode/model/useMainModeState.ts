@@ -30,7 +30,10 @@ function loadMainModeState(sessionId: string): MainModePersistedState | null {
         const raw = localStorage.getItem(getMainModeStateKey(sessionId))
         if (!raw) return null
         const parsed = JSON.parse(raw) as MainModePersistedState
-        if (!Array.isArray(parsed?.selectedEvidence) || !Array.isArray(parsed?.manualCrossOut))
+        if (
+            !Array.isArray(parsed?.selectedEvidence) ||
+            !Array.isArray(parsed?.manualCrossOut)
+        )
             return null
         return parsed
     } catch {
@@ -83,8 +86,16 @@ function rollsToGhosts(rolls: Roll[]): Ghost[] {
     return [...rolls].reverse().map((roll) => {
         const ghost = GHOSTS.find((g) => g.id === roll.itemId)
         if (ghost) return ghost
-        const s = roll.itemSnapshot as { id: GhostId; name: string; evidence: EvidenceId[] }
-        return { id: s.id, name: s.name ?? String(s.id), evidence: s.evidence ?? [] }
+        const s = roll.itemSnapshot as {
+            id: GhostId
+            name: string
+            evidence: EvidenceId[]
+        }
+        return {
+            id: s.id,
+            name: s.name ?? String(s.id),
+            evidence: s.evidence ?? [],
+        }
     })
 }
 
@@ -125,9 +136,7 @@ export function useMainModeState() {
         loadedSessionIdRef.current = session.id
         const saved = loadMainModeState(session.id)
         if (saved) {
-            setSelectedEvidence(
-                new Set(saved.selectedEvidence as EvidenceId[])
-            )
+            setSelectedEvidence(new Set(saved.selectedEvidence as EvidenceId[]))
             setManualCrossOut(new Set(saved.manualCrossOut as GhostId[]))
         } else {
             setSelectedEvidence(new Set())
@@ -146,7 +155,8 @@ export function useMainModeState() {
             const p = getPresetById(session.presetId)
             if (p) return p
         }
-        if (gameMode === 'custom') return presetFromCustomFeatures(customFeatures)
+        if (gameMode === 'custom')
+            return presetFromCustomFeatures(customFeatures)
         return getDefaultPreset()
     }, [session?.presetId, gameMode, customFeatures])
     const initialItemsInWheel = useMemo(

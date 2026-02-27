@@ -20,10 +20,27 @@ function copyIndexAs404() {
     }
 }
 
+const BASE = '/Insym_challanges_phasmo'
+
+/** Redirect /Insym_challanges_phasmo → /Insym_challanges_phasmo/ so the SPA loads without a trailing slash */
+function redirectBasename() {
+    return {
+        name: 'redirect-basename',
+        configureServer(server: import('vite').ViteDevServer) {
+            server.middlewares.use((req, _res, next) => {
+                if (req.url === BASE) {
+                    req.url = BASE + '/'
+                }
+                next()
+            })
+        },
+    }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-    base: '/Insym_challanges_phasmo/',
-    plugins: [react(), tailwindcss(), copyIndexAs404()],
+    base: `${BASE}/`,
+    plugins: [react(), tailwindcss(), copyIndexAs404(), redirectBasename()],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),

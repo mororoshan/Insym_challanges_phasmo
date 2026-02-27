@@ -1,4 +1,3 @@
-import { Footer } from '@/widgets/Footer'
 import { Header } from '@/widgets/Header'
 import { Outlet } from 'react-router-dom'
 
@@ -11,9 +10,6 @@ export function AppLayout() {
             <main className="mx-auto w-5/6 flex-1 md:w-3/4">
                 <Outlet />
             </main>
-            <footer className="shrink-0">
-                <Footer />
-            </footer>
         </div>
     )
 }

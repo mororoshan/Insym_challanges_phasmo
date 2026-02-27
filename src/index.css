@@ -3,23 +3,12 @@
 @import 'tailwindcss';
 
 @theme {
-    --breakpoint-3xl: 1920px;
-    --color-avocado-100: oklch(0.99 0 0);
-    --color-avocado-200: oklch(0.98 0.04 113.22);
-    --color-avocado-300: oklch(0.94 0.11 115.03);
-    --color-avocado-400: oklch(0.92 0.19 114.08);
-    --color-avocado-500: oklch(0.84 0.18 117.33);
-    --color-avocado-600: oklch(0.53 0.12 118.34);
-    --color-avocado-777: oklch(0.53 0.12 118.34);
-    --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
-    --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
     --color-main-bg: #242424;
     --color-button-bg: #1a1a1a;
     --color-text: #ffffff;
     --color-sub-text: #a3a3a3;
     --color-switch-bg: #141414;
     --color-switch-button: #ffffff;
-    /* ... */
 }
 
 /* Both reset.css and antd.css must specify a layer */

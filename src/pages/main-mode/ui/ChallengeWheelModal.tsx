@@ -44,14 +44,12 @@ export function ChallengeWheelModal({ open, onPresetChosen, onClose }: Props) {
                 container: 'shadow-none bg-transparent',
             }}
             open={open}
-            afterOpenChange={(isOpen) => {
-                if (isOpen) wheelRef.current?.spin()
-            }}
             footer={null}
             title={null}
         >
             <div className="flex justify-center py-4">
                 <WheelOfNames<Preset>
+                    clickable
                     ref={wheelRef}
                     items={wheelItems}
                     getLabel={getLabel}

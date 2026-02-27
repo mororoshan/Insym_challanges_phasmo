@@ -21,7 +21,7 @@ export function LanguageSwitcher({}: Props) {
 
     return (
         <div
-            className="flex items-center justify-center gap-1 rounded-lg border-0 bg-[#1a1a1a]/50 px-1 py-0.5"
+            className="flex items-center justify-center gap-1 rounded-sm border-0 bg-[#1a1a1a]/50 transition-all duration-150 ease-in-out"
             role="group"
             aria-label="Language"
         >
@@ -30,7 +30,7 @@ export function LanguageSwitcher({}: Props) {
                     key={code}
                     type="button"
                     onClick={() => i18n.changeLanguage(code)}
-                    className={`rounded-md px-2.5 py-1 text-sm font-medium transition-colors ${
+                    className={`rounded-sm px-2.5 py-1 text-sm font-medium transition-colors ${
                         currentLang === code
                             ? 'bg-[#646cff] text-white'
                             : 'text-current opacity-70 hover:opacity-100'

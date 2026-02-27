@@ -44,11 +44,6 @@ export const PRESETS: Preset[] = [
         wheels: { ghostWheel: true, itemWheel: false },
     },
     {
-        id: PRESET_IDS.WHEEL_ONLY,
-        name: 'Wheel Only',
-        wheels: { ghostWheel: true, itemWheel: false },
-    },
-    {
         id: PRESET_IDS.ZERO_EVIDENCE,
         name: 'Zero evidence',
         wheels: { ghostWheel: true, itemWheel: false },

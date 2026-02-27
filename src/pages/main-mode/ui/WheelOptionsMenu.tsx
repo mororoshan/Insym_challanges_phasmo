@@ -29,7 +29,7 @@ export function WheelOptionsMenu({
 
     return (
         <div
-            className="min-w-56 rounded-lg border border-neutral-600 bg-main-bg p-4 shadow-lg"
+            className="min-w-56 rounded-lg border border-neutral-600 bg- bg-main-bg p-4 shadow-lg"
             onClick={(e) => e.stopPropagation()}
             onPointerDown={(e) => e.stopPropagation()}
         >

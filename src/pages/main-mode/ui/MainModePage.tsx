@@ -93,6 +93,9 @@ export const MainModePage = observer(function MainModePage() {
             {activePreset.ghostList !== false && (
                 <GhostList
                     crossedOutGhostIds={crossedOutGhostIds}
+                    ghostIdsInWheel={
+                        new Set((spunGhost ?? []).map((g) => g.id))
+                    }
                     onToggleGhost={toggleGhostCrossOut}
                 />
             )}
