@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Phasmophobia Challenge Companion — The Wheel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web app for **Phasmophobia** players and streamers: spin wheels to pick ghosts and items, track evidence, and run challenge presets (Classic, Apocalypse, Zero Evidence, No Sanity, and more).
 
-Currently, two official plugins are available:
+## What it does
 
--   [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
--   [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Ghost wheel** — Spin to randomly pick one or more ghosts for your run. Filter by evidence you’ve found so only valid ghosts stay in the wheel.
+- **Item wheel** — Optional wheel for equipment/evidence (e.g. “No truck” runs): spin to decide what you’re allowed to use.
+- **Evidence & ghost list** — Mark evidence as found; ghosts that can’t have it get crossed out. Manually cross out or restore ghosts.
+- **Challenge presets** — Start a session with a preset (Classic, Apocalypse, Zero Evidence, No Sanity, etc.) so the right wheels and rules are applied.
+- **Session history** — Past spins and game results are stored locally (IndexedDB) so you can review or edit history.
+- **Settings** — Choose game mode (regular vs random challenge), language (EN/RU), wheel size, spin duration, and other options.
 
-## React Compiler
+Perfect for solo runs, co-op, or stream formats where chat or a wheel decides the challenge.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Screenshots & demo
 
-## Expanding the ESLint configuration
+<!-- Add a screenshot or short video here once you have one:
+- **Screenshot:** drag an image into the repo (e.g. `docs/screenshot.png`) and link it:
+  ![App screenshot](docs/screenshot.png)
+- **Video:** upload a short demo to YouTube/Giphy/etc. and embed or link it.
+-->
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+_Placeholder: add a screenshot or short video of the app (e.g. main screen with the wheel, or a quick demo) to show how it looks and works._
 
-```js
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
+## Tech stack
 
-            // Remove tseslint.configs.recommended and replace with this
-            tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            tseslint.configs.stylisticTypeChecked,
+- **React 19** + **TypeScript** + **Vite**
+- **Tailwind CSS** + **Ant Design** for UI
+- **MobX** for state; **react-router-dom** for routing
+- **i18next** for EN/RU
+- **IndexedDB** (via app store) for session history
 
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-])
+## Getting started
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the app at the URL Vite prints (e.g. `http://localhost:5173/Insym_challanges_phasmo/` depending on your config).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Build:** `npm run build`
+- **Preview build:** `npm run preview`
+- **Lint:** `npm run lint`
 
-export default defineConfig([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs['recommended-typescript'],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-])
-```
+## Project structure
+
+- `src/app/` — router, layout, global store (sessions, game mode settings)
+- `src/pages/main-mode/` — main “Wheel” page (evidence, ghost list, wheels, end-game modal)
+- `src/pages/settings/` — settings page (game mode, language, wheel options, custom features)
+- `src/widgets/` — header, footer, wheel component, language switcher
+- `src/shared/` — UI primitives, i18n config, Phasmophobia data (ghosts, evidence, presets), types, IndexedDB helpers
+
+---
+
+_Phasmophobia is a co-op horror game by Kinetic Games. This app is an unofficial fan tool and is not affiliated with the game or its developers._
